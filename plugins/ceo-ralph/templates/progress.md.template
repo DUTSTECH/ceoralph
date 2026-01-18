@@ -1,0 +1,51 @@
+# Progress: {{SPEC_NAME}}
+
+> Execution started: {{START_DATE}}
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Total Tasks | {{TOTAL_TASKS}} |
+| Completed | {{COMPLETED_TASKS}} |
+| In Progress | {{IN_PROGRESS}} |
+| Failed/Retried | {{FAILED_RETRIED}} |
+| Progress | {{PROGRESS_PERCENT}}% |
+
+## Execution Log
+
+{{EXECUTION_LOG}}
+
+## Task Details
+
+{{TASK_DETAILS}}
+
+## Learnings
+
+### What Worked Well
+
+{{LEARNINGS_GOOD}}
+
+### Challenges Encountered
+
+{{LEARNINGS_CHALLENGES}}
+
+### Patterns Discovered
+
+{{LEARNINGS_PATTERNS}}
+
+## Token Usage
+
+| Model | Tokens | Est. Cost |
+|-------|--------|-----------|
+| Claude (CEO) | {{CLAUDE_TOKENS}} | ~${{CLAUDE_COST}} |
+| Codex (Workers) | {{CODEX_TOKENS}} | ~${{CODEX_COST}} |
+| **Total** | **{{TOTAL_TOKENS}}** | **~${{TOTAL_COST}}** |
+
+## Files Modified
+
+{{FILES_MODIFIED}}
+
+## Commits
+
+{{COMMITS}}

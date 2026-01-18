@@ -1,0 +1,23 @@
+{
+  "name": "CEO Ralph",
+  "description": "Claude Opus 4.5 as CEO with GPT Codex workers - combining spec-driven development with multi-model delegation",
+  "version": "1.0.0",
+  "author": "CEO Ralph Team",
+  "repository": "https://github.com/dutsAI/ceo-ralph",
+  "plugins": [
+    {
+      "name": "ceo-ralph",
+      "description": "Main CEO Ralph plugin - spec-driven development with Codex delegation",
+      "path": "plugins/ceo-ralph"
+    }
+  ],
+  "keywords": [
+    "spec-driven",
+    "delegation",
+    "codex",
+    "orchestration",
+    "autonomous",
+    "multi-model"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,152 @@
+{
+  "name": "ceo-ralph",
+  "version": "1.0.0",
+  "description": "Claude Opus 4.5 as CEO orchestrator with GPT Codex workers for spec-driven autonomous development",
+  "commands": [
+    {
+      "name": "start",
+      "description": "Start a new spec or resume an existing one",
+      "file": "commands/start.md"
+    },
+    {
+      "name": "research",
+      "description": "Run the research phase for current spec",
+      "file": "commands/research.md"
+    },
+    {
+      "name": "requirements",
+      "description": "Generate requirements from research",
+      "file": "commands/requirements.md"
+    },
+    {
+      "name": "design",
+      "description": "Create technical design from requirements",
+      "file": "commands/design.md"
+    },
+    {
+      "name": "tasks",
+      "description": "Break design into executable tasks",
+      "file": "commands/tasks.md"
+    },
+    {
+      "name": "execute",
+      "description": "Start the execution loop with Codex workers",
+      "file": "commands/execute.md"
+    },
+    {
+      "name": "status",
+      "description": "Show current spec status and progress",
+      "file": "commands/status.md"
+    },
+    {
+      "name": "pause",
+      "description": "Pause the execution loop",
+      "file": "commands/pause.md"
+    },
+    {
+      "name": "resume",
+      "description": "Resume a paused execution",
+      "file": "commands/resume.md"
+    },
+    {
+      "name": "cancel",
+      "description": "Cancel current spec and cleanup",
+      "file": "commands/cancel.md"
+    },
+    {
+      "name": "help",
+      "description": "Show help and available commands",
+      "file": "commands/help.md"
+    }
+  ],
+  "agents": [
+    {
+      "name": "ceo-orchestrator",
+      "description": "Main orchestration brain",
+      "file": "agents/ceo-orchestrator.md"
+    },
+    {
+      "name": "research-analyst",
+      "description": "Research phase agent",
+      "file": "agents/research-analyst.md"
+    },
+    {
+      "name": "requirements-manager",
+      "description": "Requirements phase agent",
+      "file": "agents/requirements-manager.md"
+    },
+    {
+      "name": "design-architect",
+      "description": "Design phase agent",
+      "file": "agents/design-architect.md"
+    },
+    {
+      "name": "task-planner",
+      "description": "Task breakdown agent",
+      "file": "agents/task-planner.md"
+    },
+    {
+      "name": "execution-coordinator",
+      "description": "Execution loop coordinator",
+      "file": "agents/execution-coordinator.md"
+    },
+    {
+      "name": "codex-reviewer",
+      "description": "Reviews Codex worker outputs",
+      "file": "agents/codex-reviewer.md"
+    },
+    {
+      "name": "qa-engineer",
+      "description": "Quality assurance and verification",
+      "file": "agents/qa-engineer.md"
+    }
+  ],
+  "skills": [
+    {
+      "name": "codex-delegation",
+      "description": "How to delegate tasks to Codex workers",
+      "file": "skills/codex-delegation.md"
+    },
+    {
+      "name": "review-criteria",
+      "description": "Criteria for reviewing worker outputs",
+      "file": "skills/review-criteria.md"
+    },
+    {
+      "name": "verification-rules",
+      "description": "Verification layer rules",
+      "file": "skills/verification-rules.md"
+    }
+  ],
+  "dependencies": {
+    "mcp": {
+      "codex-worker": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["./mcp-codex-worker/dist/index.js"]
+      }
+    }
+  },
+  "configuration": {
+    "maxRetries": {
+      "type": "number",
+      "default": 3,
+      "description": "Maximum retries per task before escalation"
+    },
+    "maxGlobalIterations": {
+      "type": "number",
+      "default": 100,
+      "description": "Maximum total iterations before stopping"
+    },
+    "parallelLimit": {
+      "type": "number",
+      "default": 3,
+      "description": "Maximum parallel Codex workers"
+    },
+    "codexModel": {
+      "type": "string",
+      "default": "gpt-4",
+      "description": "OpenAI model for Codex workers"
+    }
+  }
+}
