@@ -27,14 +27,11 @@ cd ceo-ralph
 In Claude Code:
 
 ```bash
-# Add the marketplace (if publishing)
-/plugin marketplace add dutsAI/ceo-ralph
+# Add the marketplace
+/plugin marketplace add dutstech/ceoralph
 
 # Install the plugin
 /plugin install ceo-ralph
-
-# Or install from local path
-/plugin install /path/to/ceo-ralph/plugins/ceo-ralph
 ```
 
 ### Step 3: Install & Authenticate Codex CLI
