@@ -78,6 +78,28 @@ echo 'export OPENAI_API_KEY="sk-your-api-key-here"' >> ~/.zshrc
 
 Restart Claude Code after setting the variable.
 
+### Optional: One-Click Setup Script (Windows)
+
+If you want to automate build + MCP config, use the PowerShell script:
+
+```powershell
+cd /path/to/ceo-ralph
+\setup.ps1 -OpenAIKey "sk-your-api-key-here"
+```
+
+Or, if you already set `OPENAI_API_KEY`, you can run:
+
+```powershell
+\setup.ps1
+```
+
+This script:
+
+1. Installs dependencies
+2. Builds the MCP server
+3. Writes/updates `.claude/mcp.json`
+4. Prints the local `/plugin install ...` command for Claude Code
+
 ### Step 5: Configure MCP in Claude Code
 
 Add the MCP server to your Claude Code configuration.
@@ -115,6 +137,8 @@ In Claude Code:
 # Or install from local path
 /plugin install /path/to/ceo-ralph/plugins/ceo-ralph
 ```
+
+If you used the setup script, copy the exact `/plugin install ...` command it prints and run it once in Claude Code.
 
 ### Step 7: Restart Claude Code
 
