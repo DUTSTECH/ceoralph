@@ -53,6 +53,31 @@ export CEO_RALPH_PARALLEL_LIMIT=3
 export CEO_RALPH_CODEX_MODEL=gpt-4
 ```
 
+#### OS-Specific Setup for OPENAI_API_KEY
+
+**Windows (PowerShell)**
+
+```powershell
+[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "sk-your-api-key-here", "User")
+```
+
+Restart Claude Code after setting the variable.
+
+**macOS / Linux (bash/zsh)**
+
+```bash
+export OPENAI_API_KEY="sk-your-api-key-here"
+```
+
+To persist across sessions:
+
+```bash
+echo 'export OPENAI_API_KEY="sk-your-api-key-here"' >> ~/.bashrc
+echo 'export OPENAI_API_KEY="sk-your-api-key-here"' >> ~/.zshrc
+```
+
+Restart Claude Code after setting the variable.
+
 ### Step 5: Configure MCP in Claude Code
 
 Add the MCP server to your Claude Code configuration.
@@ -104,6 +129,16 @@ Restart Claude Code to load the new MCP server and plugin.
 # Check if MCP server is connected
 # (The execute command will fail gracefully if not connected)
 ```
+
+## Post-Install Checklist (Required)
+
+1. Build MCP server (if not already built):
+  - `cd mcp-codex-worker && npm install && npm run build`
+2. Set `OPENAI_API_KEY` in your environment
+3. Add the MCP server entry to `.claude/mcp.json`
+4. Restart Claude Code
+5. Run `/ceo-ralph:help` to confirm the plugin loads
+6. Run `/ceo-ralph:execute` once to confirm MCP connectivity
 
 ## Configuration Options
 

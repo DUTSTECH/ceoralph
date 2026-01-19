@@ -72,6 +72,16 @@ Environment variables:
 - `CEO_RALPH_MAX_RETRIES` - Max retries per task (default: 3)
 - `CEO_RALPH_CODEX_MODEL` - Codex model (default: gpt-4)
 
+### Post-Install Checklist
+
+1. Build MCP server: `cd mcp-codex-worker && npm install && npm run build`
+2. Set `OPENAI_API_KEY`
+3. Add MCP entry in `.claude/mcp.json`
+4. Restart Claude Code
+5. Run `/ceo-ralph:execute` once to confirm MCP connectivity
+
+See [docs/SETUP.md](docs/SETUP.md) for the full setup guide.
+
 ### More Help
 
 ```

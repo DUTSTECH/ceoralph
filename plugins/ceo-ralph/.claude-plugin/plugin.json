@@ -123,7 +123,7 @@
       "codex-worker": {
         "type": "stdio",
         "command": "node",
-        "args": ["./mcp-codex-worker/dist/index.js"]
+        "args": ["../../mcp-codex-worker/dist/index.js"]
       }
     }
   },
