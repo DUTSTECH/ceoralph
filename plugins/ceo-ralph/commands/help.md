@@ -49,6 +49,7 @@ GPT Codex workers handle code implementation under Claude's supervision.
 | `/ceo-ralph:pause` | Pause execution |
 | `/ceo-ralph:resume` | Resume paused execution |
 | `/ceo-ralph:cancel` | Cancel and cleanup |
+| `/ceo-ralph:setup` | Configure Codex MCP via Codex CLI |
 
 ### Quick Mode
 
@@ -72,15 +73,17 @@ Skip approval gates:
 ### Configuration
 
 Environment variables:
-- `OPENAI_API_KEY` - Required for Codex workers
 - `CEO_RALPH_MAX_RETRIES` - Max retries per task (default: 3)
-- `CEO_RALPH_CODEX_MODEL` - Codex model (default: gpt-4)
+- `CEO_RALPH_PARALLEL_LIMIT` - Max parallel workers (default: 3)
+- `CEO_RALPH_MAX_ITERATIONS` - Max global loop iterations (default: 100)
+
+Codex model is configured by `/ceo-ralph:setup` (default: `gpt-5.2-codex`).
 
 ### Post-Install Checklist
 
-1. Build MCP server: `cd plugins/ceo-ralph/mcp-codex-worker && npm install && npm run build`
-2. Set `OPENAI_API_KEY`
-3. Add MCP entry in `.claude/mcp.json`
+1. Install Codex CLI: `npm install -g @openai/codex`
+2. Authenticate: `codex login`
+3. Run `/ceo-ralph:setup`
 4. Restart Claude Code
 5. Run `/ceo-ralph:execute` once to confirm MCP connectivity
 

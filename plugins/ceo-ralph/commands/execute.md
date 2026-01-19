@@ -50,7 +50,7 @@ Start the execution loop with Codex workers.
                   ▼
 ┌─────────────────────────────────────┐
 │      DELEGATE TO CODEX WORKER       │
-│  via MCP: codex-worker.execute_task │
+│  via MCP: codex (Codex CLI MCP)     │
 └─────────────────────────────────────┘
                   │
                   ▼

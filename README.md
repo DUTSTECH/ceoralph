@@ -34,8 +34,7 @@ CEO Ralph is a Claude Code plugin that combines **spec-driven development** with
 ### Prerequisites
 
 - Claude Code CLI installed and authenticated
-- OpenAI API key with GPT-4 access
-- Node.js 18+
+- Codex CLI installed and authenticated (`codex login`)
 
 ### Installation
 
@@ -44,30 +43,12 @@ CEO Ralph is a Claude Code plugin that combines **spec-driven development** with
 git clone https://github.com/dutsAI/ceo-ralph.git
 cd ceo-ralph
 
-# Install MCP server dependencies
-cd plugins/ceo-ralph/mcp-codex-worker
-npm install
-npm run build
-cd ../../..
-
-# Configure MCP in Claude Code
-# Add to your .claude/mcp.json:
-{
-  "mcpServers": {
-    "codex-worker": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["./plugins/ceo-ralph/mcp-codex-worker/dist/index.js"],
-      "env": {
-        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
-      }
-    }
-  }
-}
-
 # Install the plugin
 /plugin marketplace add dutsAI/ceo-ralph
 /plugin install ceo-ralph
+
+# Configure MCP (one-time)
+/ceo-ralph:setup
 ```
 
 ### Usage
@@ -107,7 +88,6 @@ ceo-ralph/
 │   ├── templates/        # Spec templates
 │   ├── schemas/          # JSON schemas
 │   └── skills/           # Skill definitions
-├── mcp-codex-worker/     # MCP server for Codex
 ├── docs/                 # Documentation
 └── examples/             # Example specs
 ```
@@ -124,14 +104,10 @@ ceo-ralph/
 ### Environment Variables
 
 ```bash
-# Required
-OPENAI_API_KEY=sk-...           # For Codex API access
-
 # Optional
 CEO_RALPH_MAX_RETRIES=3         # Max retries per task (default: 3)
 CEO_RALPH_MAX_ITERATIONS=100    # Max global iterations (default: 100)
 CEO_RALPH_PARALLEL_LIMIT=3      # Max parallel workers (default: 3)
-CEO_RALPH_CODEX_MODEL=gpt-4     # Codex model (default: gpt-4)
 ```
 
 ## 🤝 Contributing

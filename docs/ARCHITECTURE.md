@@ -29,14 +29,14 @@ CEO Ralph follows a hierarchical architecture where Claude Opus 4.5 acts as the 
                                       │ MCP Protocol
                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                        MCP CODEX WORKER SERVER                               │
+│                           CODEX CLI MCP SERVER                               │
 │                                                                              │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                         │
-│  │execute_task │  │check_status │  │ get_output  │                         │
-│  └─────────────┘  └─────────────┘  └─────────────┘                         │
+│  ┌─────────────┐                                                           │
+│  │    codex    │                                                           │
+│  └─────────────┘                                                           │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
-                                      │ OpenAI API
+                                      │ Codex CLI (OAuth)
                                       ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         WORKER LAYER (GPT Codex)                             │
@@ -73,14 +73,11 @@ The CEO layer is responsible for all high-level decision making:
 
 ### 2. MCP Layer
 
-The MCP (Model Context Protocol) server bridges Claude and Codex:
+The MCP (Model Context Protocol) server bridges Claude and Codex via Codex CLI:
 
 ```typescript
 // Available tools
-execute_task    // Send task to Codex worker
-check_status    // Check task execution status
-get_output      // Retrieve completed task output
-cancel_task     // Cancel running task
+codex           // Send prompt to Codex via Codex CLI MCP
 ```
 
 ### 3. Worker Layer (GPT Codex)

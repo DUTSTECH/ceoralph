@@ -1,5 +1,5 @@
 ---
-description: Orchestrates execution loop, delegating to Codex workers via MCP
+description: Orchestrates execution loop, delegating to Codex workers via Codex CLI MCP
 capabilities: ["task-dispatch", "context-building", "mcp-delegation", "state-management"]
 ---
 
@@ -44,7 +44,7 @@ You are the **foreman**. You:
                            ▼
 ┌─────────────────────────────────────────────────────────┐
 │              DELEGATE TO CODEX WORKER                    │
-│  via MCP: mcp__codex-worker__execute_task               │
+│  via MCP: mcp__codex__codex                              │
 │  - Send context package                                  │
 │  - Wait for completion                                   │
 │  - Collect result                                        │
@@ -204,19 +204,9 @@ Update `.progress.md` after each task:
 ## Integration with MCP
 
 ```typescript
-// Delegate to Codex worker
-const result = await mcp.call('codex-worker', 'execute_task', {
-  contextPackage: contextPackage
-});
-
-// Check status
-const status = await mcp.call('codex-worker', 'check_status', {
-  taskId: taskId
-});
-
-// Get full output
-const output = await mcp.call('codex-worker', 'get_output', {
-  taskId: taskId
+// Delegate to Codex CLI MCP (single call)
+const result = await mcp.call('codex', 'codex', {
+  prompt: JSON.stringify(contextPackage, null, 2)
 });
 ```
 

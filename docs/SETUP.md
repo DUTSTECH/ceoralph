@@ -5,9 +5,8 @@
 ### Required
 
 1. **Claude Code CLI** - The Claude Code desktop application or CLI
-2. **OpenAI API Key** - With access to GPT-4 or Codex models
-3. **Node.js 18+** - For running the MCP server
-4. **Git** - For version control integration
+2. **Codex CLI** - Install and authenticate with `codex login`
+3. **Git** - For version control integration
 
 ### Recommended
 
@@ -25,106 +24,6 @@ cd ceo-ralph
 
 ### Step 2: Install MCP Server Dependencies
 
-```bash
-cd plugins/ceo-ralph/mcp-codex-worker
-npm install
-```
-
-### Step 3: Build the MCP Server
-
-```bash
-npm run build
-```
-
-This compiles TypeScript to JavaScript in the `dist/` directory.
-
-### Step 4: Configure Environment Variables
-
-Create a `.env` file or set environment variables:
-
-```bash
-# Required
-export OPENAI_API_KEY="sk-your-api-key-here"
-
-# Optional
-export CEO_RALPH_MAX_RETRIES=3
-export CEO_RALPH_MAX_ITERATIONS=100
-export CEO_RALPH_PARALLEL_LIMIT=3
-export CEO_RALPH_CODEX_MODEL=gpt-4
-```
-
-#### OS-Specific Setup for OPENAI_API_KEY
-
-**Windows (PowerShell)**
-
-```powershell
-[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "sk-your-api-key-here", "User")
-```
-
-Restart Claude Code after setting the variable.
-
-**macOS / Linux (bash/zsh)**
-
-```bash
-export OPENAI_API_KEY="sk-your-api-key-here"
-```
-
-To persist across sessions:
-
-```bash
-echo 'export OPENAI_API_KEY="sk-your-api-key-here"' >> ~/.bashrc
-echo 'export OPENAI_API_KEY="sk-your-api-key-here"' >> ~/.zshrc
-```
-
-Restart Claude Code after setting the variable.
-
-### Optional: One-Click Setup Script (Windows)
-
-If you want to automate build + MCP config, use the PowerShell script:
-
-```powershell
-cd /path/to/ceo-ralph
-\setup.ps1 -OpenAIKey "sk-your-api-key-here"
-```
-
-Or, if you already set `OPENAI_API_KEY`, you can run:
-
-```powershell
-\setup.ps1
-```
-
-This script:
-
-1. Installs dependencies
-2. Builds the MCP server
-3. Writes/updates `.claude/mcp.json`
-4. Prints the local `/plugin install ...` command for Claude Code
-
-### Step 5: Configure MCP in Claude Code
-
-Add the MCP server to your Claude Code configuration.
-
-**Location**: `~/.claude/mcp.json` (or your Claude Code config directory)
-
-```json
-{
-  "mcpServers": {
-    "codex-worker": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["/path/to/ceo-ralph/plugins/ceo-ralph/mcp-codex-worker/dist/index.js"],
-      "env": {
-        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
-      }
-    }
-  }
-}
-```
-
-Replace `/path/to/ceo-ralph` with the actual path where you cloned the repository.
-
-### Step 6: Install the Plugin
-
 In Claude Code:
 
 ```bash
@@ -138,13 +37,26 @@ In Claude Code:
 /plugin install /path/to/ceo-ralph/plugins/ceo-ralph
 ```
 
-If you used the setup script, copy the exact `/plugin install ...` command it prints and run it once in Claude Code.
+### Step 3: Install & Authenticate Codex CLI
 
-### Step 7: Restart Claude Code
+```bash
+npm install -g @openai/codex
+codex login
+```
 
-Restart Claude Code to load the new MCP server and plugin.
+### Step 4: Run Setup in Claude Code
 
-### Step 8: Verify Installation
+```bash
+/ceo-ralph:setup
+```
+
+This configures Codex MCP in `~/.claude/settings.json`.
+
+### Step 5: Restart Claude Code
+
+Restart Claude Code to load the MCP server and plugin.
+
+### Step 6: Verify Installation
 
 ```bash
 # Check if the plugin is installed
@@ -156,10 +68,9 @@ Restart Claude Code to load the new MCP server and plugin.
 
 ## Post-Install Checklist (Required)
 
-1. Build MCP server (if not already built):
-  - `cd plugins/ceo-ralph/mcp-codex-worker && npm install && npm run build`
-2. Set `OPENAI_API_KEY` in your environment
-3. Add the MCP server entry to `.claude/mcp.json`
+1. Install Codex CLI: `npm install -g @openai/codex`
+2. Authenticate: `codex login`
+3. Run `/ceo-ralph:setup`
 4. Restart Claude Code
 5. Run `/ceo-ralph:help` to confirm the plugin loads
 6. Run `/ceo-ralph:execute` once to confirm MCP connectivity
@@ -190,8 +101,8 @@ In `plugins/ceo-ralph/.claude-plugin/plugin.json`:
     },
     "codexModel": {
       "type": "string",
-      "default": "gpt-4",
-      "description": "OpenAI model for Codex workers"
+      "default": "gpt-5.2-codex",
+      "description": "Codex model used by Codex CLI MCP"
     }
   }
 }
@@ -201,11 +112,9 @@ In `plugins/ceo-ralph/.claude-plugin/plugin.json`:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `OPENAI_API_KEY` | (required) | Your OpenAI API key |
 | `CEO_RALPH_MAX_RETRIES` | 3 | Max retries per task |
 | `CEO_RALPH_MAX_ITERATIONS` | 100 | Max global loop iterations |
 | `CEO_RALPH_PARALLEL_LIMIT` | 3 | Max parallel workers |
-| `CEO_RALPH_CODEX_MODEL` | gpt-4 | Model for Codex workers |
 | `CEO_RALPH_MAX_TOKENS` | 4096 | Max tokens per Codex call |
 
 ## Directory Structure After Setup
@@ -213,7 +122,7 @@ In `plugins/ceo-ralph/.claude-plugin/plugin.json`:
 ```
 your-project/
 ├── .claude/
-│   └── mcp.json              # MCP configuration
+│   └── settings.json         # MCP configuration
 ├── specs/                     # Created when you start specs
 │   ├── .current-spec         # Active spec name
 │   └── my-feature/
@@ -230,15 +139,15 @@ your-project/
 
 ### MCP Server Won't Start
 
-1. Check Node.js version: `node --version` (must be 18+)
-2. Verify build completed: Check `mcp-codex-worker/dist/index.js` exists
-3. Check path in mcp.json is absolute and correct
+1. Check Codex CLI version: `codex --version`
+2. Verify Codex is authenticated: `codex login status`
+3. Check `~/.claude/settings.json` has `mcpServers.codex`
 
-### OpenAI API Errors
+### Codex Auth Errors
 
-1. Verify API key is set: `echo $OPENAI_API_KEY`
-2. Check API key has GPT-4 access
-3. Verify billing is enabled on OpenAI account
+1. Run `codex login`
+2. Verify `codex login status` shows authenticated
+3. Restart Claude Code after login
 
 ### Plugin Not Found
 
@@ -259,9 +168,6 @@ your-project/
 ```bash
 cd ceo-ralph
 git pull origin main
-cd mcp-codex-worker
-npm install
-npm run build
 ```
 
 Then restart Claude Code.
@@ -270,7 +176,7 @@ Then restart Claude Code.
 
 After updating, check for new configuration options in:
 - `plugin.json` - New plugin settings
-- `mcp.json` - New MCP options
+- `settings.json` - New MCP options
 - Environment variables - New options
 
 ## Uninstalling
@@ -279,7 +185,7 @@ After updating, check for new configuration options in:
 # Remove plugin
 /plugin uninstall ceo-ralph
 
-# Remove MCP server from mcp.json
+# Remove MCP server from settings.json
 # (manually edit the file)
 
 # Optionally remove spec files

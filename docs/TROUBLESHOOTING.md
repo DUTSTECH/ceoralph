@@ -26,40 +26,42 @@
 **Symptoms**: Execute command fails with connection error
 
 **Solutions**:
-1. Verify MCP server is built:
+1. Verify Codex CLI is installed:
    ```bash
-   ls mcp-codex-worker/dist/index.js
+   codex --version
    ```
-2. Check mcp.json path is absolute:
+2. Verify Codex is authenticated:
+   ```bash
+   codex login status
+   ```
+3. Check MCP config in `~/.claude/settings.json`:
    ```json
    {
-     "args": ["/absolute/path/to/mcp-codex-worker/dist/index.js"]
+     "mcpServers": {
+       "codex": {
+         "type": "stdio",
+         "command": "codex",
+         "args": ["-m", "gpt-5.2-codex", "mcp-server"]
+       }
+     }
    }
    ```
-3. Verify OPENAI_API_KEY is set:
-   ```bash
-   echo $OPENAI_API_KEY
-   ```
-4. Check Node.js version:
-   ```bash
-   node --version  # Must be 18+
-   ```
+4. Restart Claude Code
 
-### API Issues
+### Auth Issues
 
-#### "OpenAI API key invalid"
+#### "Codex not authenticated"
 
-**Symptoms**: Codex worker returns authentication error
+**Symptoms**: Codex MCP returns authentication error
 
 **Solutions**:
-1. Verify key format starts with `sk-`
-2. Check key in OpenAI dashboard is active
-3. Ensure key has access to GPT-4
-4. Verify billing is enabled
+1. Run `codex login`
+2. Confirm status with `codex login status`
+3. Restart Claude Code
 
 #### "Rate limit exceeded"
 
-**Symptoms**: API returns 429 error
+**Symptoms**: Codex MCP returns 429 error
 
 **Solutions**:
 1. Wait and retry (automatic with backoff)
@@ -67,10 +69,16 @@
    ```bash
    export CEO_RALPH_PARALLEL_LIMIT=1
    ```
-3. Use a lower-tier model:
-   ```bash
-   export CEO_RALPH_CODEX_MODEL=gpt-3.5-turbo
-   ```
+3. If you have access to a different Codex model, update `~/.claude/settings.json`:
+    ```json
+    {
+       "mcpServers": {
+          "codex": {
+             "args": ["-m", "<alternate-model>", "mcp-server"]
+          }
+       }
+    }
+    ```
 
 #### "Context length exceeded"
 

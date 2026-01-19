@@ -110,16 +110,24 @@ I am preparing to delegate Task {id} to a Codex worker.
 ### Step 2: Delegate
 
 ```markdown
-Delegating via MCP: mcp__codex-worker__execute_task
+Delegating via MCP: mcp__codex__codex
 
 Context package prepared with {n} files and {n} constraints.
+```
+
+Example payload:
+
+```json
+{
+  "prompt": "TASK: Implement user login form\nEXPECTED OUTCOME: Working form with validation\nCONTEXT: {contextPackage JSON here}\nCONSTRAINTS: Follow existing patterns\nMUST DO: Update Login.tsx\nMUST NOT DO: Modify unrelated files\nOUTPUT FORMAT: Summary + files modified + signal"
+}
 ```
 
 ### Step 3: Monitor
 
 ```markdown
 Task {id} delegated to Codex worker.
-Status: {pending|running|completed|failed}
+Status: {pending|completed|failed}
 ```
 
 ### Step 4: Receive
