@@ -1,8 +1,7 @@
 ---
-name: help
 description: Show help and available commands
-allowed-tools: Read
-timeout: 30000
+argument-hint: [command]
+allowed-tools: [Read]
 ---
 
 # /ceo-ralph:help

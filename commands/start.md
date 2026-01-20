@@ -1,8 +1,7 @@
 ---
-name: start
 description: Smart entry point - resumes existing spec or creates new one
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
-timeout: 120000
+argument-hint: [name] [goal] [--quick]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Task, AskUserQuestion]
 ---
 
 # /ceo-ralph:start

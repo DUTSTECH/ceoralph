@@ -1,8 +1,7 @@
 ---
-name: implement
 description: Execute tasks sequentially via Codex delegation
-allowed-tools: mcp__codex__codex, Read, Write, Edit, Bash, Glob, Grep
-timeout: 600000
+argument-hint: [--max-retries N]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Task]
 ---
 
 # /ceo-ralph:implement

@@ -1,8 +1,6 @@
 ---
-name: uninstall
 description: Remove CEO Ralph MCP configuration
-allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
-timeout: 30000
+allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Uninstall

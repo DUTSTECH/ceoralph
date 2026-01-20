@@ -1,8 +1,7 @@
 ---
-name: new
 description: Create new spec, initiate research
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
-timeout: 120000
+argument-hint: <name> [goal] [--skip-research]
+allowed-tools: [Read, Write, Edit, Bash, Task, AskUserQuestion]
 ---
 
 # /ceo-ralph:new

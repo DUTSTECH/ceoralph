@@ -1,8 +1,7 @@
 ---
-name: pause
 description: Pause the execution loop
-allowed-tools: Read, Write, Edit
-timeout: 30000
+argument-hint: [reason]
+allowed-tools: [Read, Write, Edit]
 ---
 
 # /ceo-ralph:pause

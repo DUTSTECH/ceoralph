@@ -1,8 +1,7 @@
 ---
-name: switch
 description: Change active spec
-allowed-tools: Read, Glob
-timeout: 30000
+argument-hint: [spec-name]
+allowed-tools: [Read, Write, Glob]
 ---
 
 # /ceo-ralph:switch

@@ -1,8 +1,7 @@
 ---
-name: feedback
 description: Submit feedback or report issues
-allowed-tools: Bash, AskUserQuestion
-timeout: 60000
+argument-hint: [message]
+allowed-tools: [Bash, AskUserQuestion]
 ---
 
 # /ceo-ralph:feedback

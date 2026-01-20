@@ -1,8 +1,7 @@
 ---
-name: execute
-description: Alias for implement - executes tasks via Codex delegation
-allowed-tools: mcp__codex__codex, Read, Write, Edit, Bash, Glob, Grep
-timeout: 600000
+description: Start the execution loop with Codex workers
+argument-hint: [--max-iterations N]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Task]
 ---
 
 # Execute

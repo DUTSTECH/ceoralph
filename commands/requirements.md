@@ -1,8 +1,7 @@
 ---
-name: requirements
 description: Generate requirements from the research phase
-allowed-tools: Read, Write, Edit, Glob, Grep, mcp__codex__codex, AskUserQuestion
-timeout: 300000
+argument-hint: [spec-name]
+allowed-tools: [Read, Write, Edit, Glob, Grep, Task, AskUserQuestion]
 ---
 
 # /ceo-ralph:requirements

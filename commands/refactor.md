@@ -1,8 +1,7 @@
 ---
-name: refactor
 description: Refactor spec files after implementation changes
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
-timeout: 300000
+argument-hint: [--file=requirements|design|tasks]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Task, AskUserQuestion]
 ---
 
 # /ceo-ralph:refactor

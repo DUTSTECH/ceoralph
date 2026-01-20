@@ -1,8 +1,6 @@
 ---
-name: setup
 description: Configure Codex MCP server and verify authentication
-allowed-tools: Bash, Read, Write, Edit, AskUserQuestion
-timeout: 60000
+allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
 
 # Setup

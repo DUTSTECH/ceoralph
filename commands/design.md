@@ -1,8 +1,7 @@
 ---
-name: design
 description: Create technical design from requirements
-allowed-tools: Read, Write, Edit, Glob, Grep, mcp__codex__codex
-timeout: 300000
+argument-hint: [spec-name]
+allowed-tools: [Read, Write, Edit, Glob, Grep, Task]
 ---
 
 # /ceo-ralph:design

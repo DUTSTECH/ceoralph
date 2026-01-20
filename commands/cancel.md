@@ -1,8 +1,7 @@
 ---
-name: cancel
 description: Cancel the current spec and cleanup
-allowed-tools: Read, Write, Edit, Bash, AskUserQuestion
-timeout: 60000
+argument-hint: [--keep-files]
+allowed-tools: [Read, Write, Edit, Bash, AskUserQuestion]
 ---
 # /ceo-ralph:cancel
 

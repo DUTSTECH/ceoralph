@@ -1,13 +1,13 @@
 {
   "name": "ceo-ralph",
   "description": "Claude Opus 4.5 as CEO orchestrator with GPT Codex workers for spec-driven autonomous development",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
-    "name": "dutsAI",
-    "url": "https://github.com/dutsAI"
+    "name": "DUTSTECH",
+    "url": "https://github.com/DUTSTECH"
   },
-  "homepage": "https://github.com/dutsAI/ceo-ralph",
-  "repository": "https://github.com/dutsAI/ceo-ralph",
+  "homepage": "https://github.com/DUTSTECH/ceoralph",
+  "repository": "https://github.com/DUTSTECH/ceoralph",
   "license": "MIT",
   "keywords": ["spec-driven", "delegation", "codex", "orchestration", "autonomous", "multi-model"]
 }
