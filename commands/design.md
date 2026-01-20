@@ -21,12 +21,18 @@ Create technical design from requirements.
 - `requirements.md` exists in spec directory
 - State shows phase is ready for design
 
+## Coordinator Principle
+
+**YOU ARE A COORDINATOR, NOT AN IMPLEMENTER.**
+
+Never write designs yourself. Delegate to the `architect-reviewer` agent.
+
 ## Behavior
 
 1. Load state and verify requirements complete
 2. Read `research.md` and `requirements.md`
-3. Delegate to `design-architect` agent
-4. Design architect produces:
+3. Delegate to `architect-reviewer` agent
+4. Architect reviewer produces:
    - Architecture overview with diagram
    - Component designs with interfaces
    - Data flow documentation
@@ -41,7 +47,7 @@ Create technical design from requirements.
 ## Agent Delegation
 
 ```markdown
-Delegate to: design-architect
+Delegate to: architect-reviewer
 
 Context:
 - Spec name: {specName}
@@ -49,7 +55,7 @@ Context:
 - Requirements: {contents of requirements.md}
 
 Instructions:
-Follow the design-architect agent protocol to create
+Follow the architect-reviewer agent protocol to create
 a technical design that fulfills the requirements.
 ```
 

@@ -21,6 +21,12 @@ Break design into executable tasks.
 - `design.md` exists in spec directory
 - State shows phase is ready for task planning
 
+## Coordinator Principle
+
+**YOU ARE A COORDINATOR, NOT AN IMPLEMENTER.**
+
+Never write task lists yourself. Delegate to the `task-planner` agent.
+
 ## Behavior
 
 1. Load state and verify design complete
@@ -104,7 +110,7 @@ into executable tasks using POC-first methodology.
 
 Review `./specs/{specName}/tasks.md` for full details.
 
-✅ To approve and start execution: `/ceo-ralph:execute`
+✅ To approve and start execution: `/ceo-ralph:implement`
 ❌ To request changes: Provide feedback and run `/ceo-ralph:tasks` again
 ```
 

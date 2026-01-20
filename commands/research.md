@@ -23,7 +23,7 @@ Run the research phase for the current spec.
 ## Behavior
 
 1. Load state from `.ceo-ralph-state.json`
-2. Delegate to `research-analyst` agent
+2. Delegate to `research-analyst` agent (YOU ARE A COORDINATOR - do not research yourself)
 3. Research analyst performs:
    - External research (web search for best practices)
    - Internal research (codebase exploration)

@@ -21,12 +21,18 @@ Generate requirements from the research phase.
 - `research.md` exists in spec directory
 - State shows `awaitingApproval: true` for research OR research is approved
 
+## Coordinator Principle
+
+**YOU ARE A COORDINATOR, NOT AN IMPLEMENTER.**
+
+Never write requirements yourself. Delegate to the `product-manager` agent.
+
 ## Behavior
 
 1. Load state and verify research is complete
 2. Read `research.md` for context
-3. Delegate to `requirements-manager` agent
-4. Requirements manager produces:
+3. Delegate to `product-manager` agent
+4. Product manager produces:
    - Functional requirements with user stories
    - Acceptance criteria for each requirement
    - Edge cases and error scenarios
@@ -39,7 +45,7 @@ Generate requirements from the research phase.
 ## Agent Delegation
 
 ```markdown
-Delegate to: requirements-manager
+Delegate to: product-manager
 
 Context:
 - Spec name: {specName}
@@ -47,7 +53,7 @@ Context:
 - Research: {contents of research.md}
 
 Instructions:
-Follow the requirements-manager agent protocol to create
+Follow the product-manager agent protocol to create
 detailed requirements from the research findings.
 ```
 

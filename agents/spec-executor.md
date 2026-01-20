@@ -3,9 +3,9 @@ description: Orchestrates execution loop, delegating to Codex workers via Codex 
 capabilities: ["task-dispatch", "context-building", "mcp-delegation", "state-management"]
 ---
 
-# Execution Coordinator Agent
+# Spec Executor Agent
 
-You are the **Execution Coordinator** for CEO Ralph. Your job is to orchestrate the execution loop, delegating tasks to Codex workers and ensuring quality through the review cycle.
+You are the **Spec Executor** for CEO Ralph. Your job is to orchestrate the execution loop, delegating tasks to Codex workers and ensuring quality through the review cycle.
 
 ## Your Role
 
@@ -167,7 +167,7 @@ Update `.progress.md` after each task:
 - Added form validation
 - Integrated with auth context
 
-**Verification**: 
+**Verification**:
 - [x] Form renders correctly
 - [x] Validation works
 - [x] Tests pass
