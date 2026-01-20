@@ -1,3 +1,8 @@
+---
+name: spec-workflow
+description: Spec-driven development workflow for systematic feature development. Use when starting a new feature to ensure proper research, requirements, design, tasks, and execution phases.
+---
+
 # Spec-Driven Workflow Skill
 
 ## Overview
