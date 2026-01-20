@@ -28,7 +28,7 @@ In Claude Code:
 
 ```bash
 # Add the marketplace
-/plugin marketplace add https://github.com/DUTSTECH/ceoralph
+/plugin marketplace add DUTSTECH/ceoralph
 
 # Install the plugin
 /plugin install ceo-ralph@dutstech-ceoralph
