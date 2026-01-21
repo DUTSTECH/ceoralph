@@ -28,3 +28,36 @@ Requires `cloudflared` installed.
 ```bash
 python remote-ui/remote_ui.py enable
 ```
+
+## Cloudflare Check (Required)
+
+Before running, check if `cloudflared` is installed:
+
+```bash
+cloudflared --version
+```
+
+If it returns a version, continue with `python remote-ui/remote_ui.py enable`.
+
+If missing, ask the user to install it:
+
+**Windows (PowerShell):**
+```powershell
+winget install --id Cloudflare.cloudflared
+```
+
+**macOS (Homebrew):**
+```bash
+brew install cloudflared
+```
+
+**Linux (Debian/Ubuntu):**
+```bash
+sudo apt-get update && sudo apt-get install -y cloudflared
+```
+
+Then re-run:
+
+```
+/ceo-ralph:enableremote
+```

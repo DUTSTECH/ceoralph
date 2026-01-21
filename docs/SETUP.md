@@ -53,20 +53,13 @@ This configures Codex MCP in `~/.claude/settings.json`.
 
 ### Step 5: (Optional) Enable Remote UI Approvals
 
-If you want approvals accessible from anywhere, configure the Remote UI:
+If you want approvals accessible from anywhere, run:
 
 ```bash
-python remote-ui/remote_ui.py enable
+/ceo-ralph:enableremote
 ```
 
-This prompts for a password, starts the server, and launches a Cloudflare Quick Tunnel.
-
-If you prefer manual steps, you can still run:
-
-```bash
-cloudflared tunnel --url http://127.0.0.1:8123
-python remote-ui/remote_ui.py set-public-url https://your-url.trycloudflare.com
-```
+This guides Cloudflare setup if needed and starts the Remote UI.
 
 See `docs/REMOTE_UI.md` for details.
 

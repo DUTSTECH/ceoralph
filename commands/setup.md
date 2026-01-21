@@ -113,17 +113,10 @@ Next steps:
 
 ## Optional: Remote UI Approvals
 
-If you want approvals accessible from anywhere, configure the Remote UI:
+If you want approvals accessible from anywhere, run:
 
-```bash
-python remote-ui/remote_ui.py enable
+```
+/ceo-ralph:enableremote
 ```
 
-This prompts for a password, starts the server, and launches a Cloudflare Quick Tunnel.
-
-To expose it via HTTPS manually (free):
-
-```bash
-cloudflared tunnel --url http://127.0.0.1:8123
-python remote-ui/remote_ui.py set-public-url https://your-url.trycloudflare.com
-```
+This will guide you through Cloudflare installation (if needed) and start the Remote UI.

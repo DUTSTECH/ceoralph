@@ -19,8 +19,9 @@ The Remote UI lets CEO Ralph request approvals and collect user input from a web
 
 1. One-shot setup + HTTPS tunnel (requires `cloudflared` installed):
    ```bash
-   python remote-ui/remote_ui.py enable
+   /ceo-ralph:enableremote
    ```
+   Verify the public URL is printed and saved to `~/.ceo-ralph/remote-ui/config.json`.
 
 2. Or run step-by-step:
 
