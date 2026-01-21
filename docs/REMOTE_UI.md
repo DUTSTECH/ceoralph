@@ -12,8 +12,9 @@ The Remote UI lets CEO Ralph request approvals and collect user input from a web
 ## Security Model
 
 - **Strong auth**: Password (set at setup) plus a 32-byte access key for API usage.
-- **Encrypted in transit**: Use Cloudflare Quick Tunnel for HTTPS.
+- **Encrypted in transit**: Use Cloudflare Quick Tunnel for HTTPS when accessing remotely.
 - **Local bind**: Server only binds to `127.0.0.1` by default.
+- **No plaintext storage**: Passwords are hashed with PBKDF2; access keys are never stored in plaintext.
 
 ## Quick Start
 
@@ -23,6 +24,8 @@ The Remote UI lets CEO Ralph request approvals and collect user input from a web
    ```
    Verify the public URL is printed and saved to `~/.ceo-ralph/remote-ui/config.json`. Keep the command running while the tunnel is active.
    If you stop the process, the Cloudflare URL will show a host error.
+
+2. All approval requests from CEO Ralph (including Claude orchestration and Codex execution) appear here for review.
 
 2. Or run step-by-step:
 

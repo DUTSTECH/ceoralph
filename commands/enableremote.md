@@ -64,8 +64,8 @@ If still missing, stop and ask the user to install manually.
 
 ## Step 2: Enable Remote UI
 
-If `cloudflared` is installed, prompt for a password in Claude Code and pass it via `--password`.
-Do not echo the password back to the user.
+If `cloudflared` is installed, prompt for a password in Claude Code and pass it via stdin.
+Do not echo the password back to the user, and do not include it in the command line.
 Keep the process running; do NOT kill the background task once started.
 
 ```bash
@@ -100,7 +100,7 @@ fi
 Ask the user for a password (min 12 chars). Then run:
 
 ```bash
-python "$SCRIPT" enable --password "$PASSWORD"
+printf '%s' "$PASSWORD" | python "$SCRIPT" enable --password-stdin
 ```
 
 ## Step 3: Verify Configuration

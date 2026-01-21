@@ -95,6 +95,16 @@ def prompt_password():
         return password
 
 
+def read_password_stdin():
+    raw = sys.stdin.read()
+    password = raw.strip()
+    if not password:
+        raise RuntimeError("Password is required.")
+    if len(password) < 12:
+        raise RuntimeError("Password must be at least 12 characters.")
+    return password
+
+
 def ensure_config(port, password=None):
     config = load_json(CONFIG_PATH, None)
     if config:
@@ -217,6 +227,9 @@ def json_response(handler, payload, status=HTTPStatus.OK):
     handler.send_header("Content-Type", "application/json")
     handler.send_header("Content-Length", str(len(data)))
     handler.send_header("Cache-Control", "no-store")
+    handler.send_header("X-Content-Type-Options", "nosniff")
+    handler.send_header("X-Frame-Options", "DENY")
+    handler.send_header("Referrer-Policy", "no-referrer")
     handler.end_headers()
     handler.wfile.write(data)
 
@@ -227,6 +240,10 @@ def html_response(handler, body, status=HTTPStatus.OK):
     handler.send_header("Content-Type", "text/html; charset=utf-8")
     handler.send_header("Content-Length", str(len(data)))
     handler.send_header("Cache-Control", "no-store")
+    handler.send_header("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'")
+    handler.send_header("X-Content-Type-Options", "nosniff")
+    handler.send_header("X-Frame-Options", "DENY")
+    handler.send_header("Referrer-Policy", "no-referrer")
     handler.end_headers()
     handler.wfile.write(data)
 
@@ -236,29 +253,32 @@ APP_HTML = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CEO Ralph Remote Approval</title>
+  <title>CEO Ralph - Board Approval Portal</title>
   <style>
     :root { color-scheme: light; }
-    body { margin: 0; font-family: "Georgia", "Times New Roman", serif; background: #f6f2ea; color: #2b2b2b; }
-    header { padding: 24px 32px; background: #1d1f1f; color: #f6f2ea; }
-    h1 { margin: 0; font-size: 24px; letter-spacing: 1px; }
+    body { margin: 0; font-family: "Iowan Old Style", "Palatino", serif; background: radial-gradient(circle at top, #fdfcf9 0%, #f1ece4 45%, #e8dfd2 100%); color: #2b2b2b; }
+    header { padding: 28px 32px; background: #161717; color: #f6f2ea; border-bottom: 3px solid #c8a14a; }
+    h1 { margin: 0; font-size: 22px; letter-spacing: 0.2em; text-transform: uppercase; }
+    .subhead { margin-top: 6px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #d7c69a; }
     main { padding: 24px 32px 48px; }
-    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-    .card { background: #fff; border: 1px solid #e0d9cd; border-radius: 12px; padding: 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
-    .status { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .pending { color: #c56a00; }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card { background: #fff; border: 1px solid #e1d6c7; border-radius: 14px; padding: 18px; box-shadow: 0 12px 24px rgba(27, 21, 10, 0.08); }
+    .status { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
+    .pending { color: #b36a00; }
     .approved { color: #1a7f37; }
     .denied { color: #b42318; }
-    textarea { width: 100%; min-height: 80px; border: 1px solid #d7cdbf; border-radius: 8px; padding: 8px; font-family: inherit; }
-    button { padding: 10px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+    h3 { margin: 10px 0 6px; font-size: 18px; }
+    textarea { width: 100%; min-height: 84px; border: 1px solid #d7cdbf; border-radius: 10px; padding: 10px; font-family: inherit; background: #faf7f1; }
+    button { padding: 10px 16px; border-radius: 999px; border: none; cursor: pointer; font-weight: 700; letter-spacing: 0.04em; }
     .approve { background: #1a7f37; color: #fff; }
     .deny { background: #b42318; color: #fff; margin-left: 8px; }
-    .meta { font-size: 12px; color: #5b5b5b; }
+    .meta { font-size: 12px; color: #5b5b5b; margin-top: 6px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>CEO Ralph Approval Queue</h1>
+    <h1>CEO Ralph - Board Approval Portal</h1>
+    <div class="subhead">Executive approval queue</div>
   </header>
   <main>
     <div class="grid" id="requests"></div>
@@ -330,18 +350,18 @@ LOGIN_HTML = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login - CEO Ralph Remote UI</title>
+  <title>Login - CEO Ralph - Board Approval Portal</title>
   <style>
-    body { margin: 0; font-family: "Georgia", "Times New Roman", serif; background: #f6f2ea; color: #2b2b2b; }
-    main { max-width: 420px; margin: 10vh auto; background: #fff; padding: 24px; border-radius: 12px; border: 1px solid #e0d9cd; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+    body { margin: 0; font-family: "Iowan Old Style", "Palatino", serif; background: radial-gradient(circle at top, #fdfcf9 0%, #f1ece4 45%, #e8dfd2 100%); color: #2b2b2b; }
+    main { max-width: 420px; margin: 10vh auto; background: #fff; padding: 28px; border-radius: 16px; border: 1px solid #e1d6c7; box-shadow: 0 12px 24px rgba(27, 21, 10, 0.08); }
     label { display: block; margin-bottom: 8px; font-weight: 600; }
-    input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d7cdbf; font-family: inherit; }
-    button { margin-top: 16px; padding: 10px 14px; border-radius: 8px; border: none; background: #1d1f1f; color: #f6f2ea; font-weight: 600; cursor: pointer; width: 100%; }
+    input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d7cdbf; font-family: inherit; background: #faf7f1; }
+    button { margin-top: 16px; padding: 12px 14px; border-radius: 999px; border: none; background: #1d1f1f; color: #f6f2ea; font-weight: 700; cursor: pointer; width: 100%; letter-spacing: 0.06em; text-transform: uppercase; font-size: 12px; }
   </style>
 </head>
 <body>
   <main>
-    <h1>Remote UI Access</h1>
+    <h1>Board Portal Access</h1>
     <form method="post" action="/login">
       <label for="password">Password</label>
       <input id="password" name="password" type="password" required>
@@ -395,6 +415,13 @@ class RemoteUIHandler(BaseHTTPRequestHandler):
         self.end_headers()
         return False
 
+    def _is_https(self):
+        forwarded = self.headers.get("X-Forwarded-Proto", "")
+        if forwarded.lower() == "https":
+            return True
+        visitor = self.headers.get("CF-Visitor", "")
+        return "https" in visitor.lower()
+
     def _set_session_cookie(self, token):
         parts = [
             f"{SESSION_COOKIE}={token}",
@@ -402,6 +429,8 @@ class RemoteUIHandler(BaseHTTPRequestHandler):
             "HttpOnly",
             "SameSite=Strict",
         ]
+        if self._is_https():
+            parts.append("Secure")
         self.send_header("Set-Cookie", "; ".join(parts))
 
     def _read_body(self):
@@ -488,7 +517,12 @@ class RemoteUIHandler(BaseHTTPRequestHandler):
 
 
 def cmd_setup(args):
-    password = args.password or prompt_password()
+    if args.password and args.password_stdin:
+        raise RuntimeError("Use either --password or --password-stdin.")
+    if args.password_stdin:
+        password = read_password_stdin()
+    else:
+        password = args.password or prompt_password()
     config, access_key = ensure_config(args.port, password=password)
     ensure_requests()
     if access_key:
@@ -605,7 +639,12 @@ def start_server_thread(bind_addr, port, config):
 def cmd_enable(args):
     config = load_json(CONFIG_PATH, None)
     if not config:
-        password = args.password or prompt_password()
+        if args.password and args.password_stdin:
+            raise RuntimeError("Use either --password or --password-stdin.")
+        if args.password_stdin:
+            password = read_password_stdin()
+        else:
+            password = args.password or prompt_password()
         config, access_key = ensure_config(args.port, password=password)
         print("Remote UI configured.")
         print(f"Access key (store securely): {access_key}")
@@ -659,6 +698,7 @@ def build_parser():
     setup_parser = subparsers.add_parser("setup", help="Initialize remote UI config")
     setup_parser.add_argument("--port", type=int, default=8123)
     setup_parser.add_argument("--password")
+    setup_parser.add_argument("--password-stdin", action="store_true")
     setup_parser.set_defaults(func=cmd_setup)
 
     start_parser = subparsers.add_parser("start", help="Start the remote UI server")
@@ -670,6 +710,7 @@ def build_parser():
     enable_parser.add_argument("--port", type=int, default=8123)
     enable_parser.add_argument("--bind", default="127.0.0.1")
     enable_parser.add_argument("--password")
+    enable_parser.add_argument("--password-stdin", action="store_true")
     enable_parser.set_defaults(func=cmd_enable)
 
     request_parser = subparsers.add_parser("request", help="Create an approval request")
