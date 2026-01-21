@@ -1,116 +1,85 @@
 ---
-description: Show current spec status and progress
-argument-hint: [--all]
-allowed-tools: [Read, Glob]
+description: Show all specs and their current status
+argument-hint:
+allowed-tools: [Read, Bash, Glob, Task]
 ---
 
-# /ceo-ralph:status
+# Spec Status
 
-Show current spec status and progress.
+You are showing the status of all specifications.
 
-## Usage
+## Gather Information
+
+1. Check if `./specs/` directory exists
+2. Read `./specs/.current-spec` to identify active spec
+3. List all subdirectories in `./specs/` (each is a spec)
+
+## For Each Spec
+
+For each spec directory found:
+
+1. Read `.ralph-state.json` if exists to get:
+   - Current phase
+   - Task progress (taskIndex/totalTasks)
+   - Iteration count
+
+2. Check which files exist:
+   - research.md
+   - requirements.md
+   - design.md
+   - tasks.md
+
+3. If tasks.md exists, count completed tasks:
+   - Count lines matching `- [x]` pattern
+   - Count lines matching `- [ ]` pattern
+
+4. If `.ralph-state.json` has `relatedSpecs`:
+   - List related specs with relevance
+   - Mark those with `mayNeedUpdate: true` with asterisk
+
+## Output Format
 
 ```
-/ceo-ralph:status
-/ceo-ralph:status --all
+# CEO Ralph Status
+
+Active spec: <name from .current-spec> (or "none")
+
+## Specs
+
+### <spec-name-1> [ACTIVE]
+Phase: <phase>
+Progress: <completed>/<total> tasks (<percentage>%)
+Files: [research] [requirements] [design] [tasks]
+Related: auth-system (HIGH*), api-middleware (MEDIUM)
+         * = may need update
+
+### <spec-name-2>
+Phase: <phase>
+Progress: <completed>/<total> tasks
+Files: [research] [requirements] [design] [tasks]
+Related: <none or list>
+
+---
+
+Commands:
+- /ceo-ralph:switch <name> - Switch active spec
+- /ceo-ralph:new <name> - Create new spec
+- /ceo-ralph:<phase> - Run phase for active spec
 ```
 
-## Arguments
+## Phase Display
 
-- `--all`: Show all specs, not just current one
+Show phase status with indicators:
+- research: "Research"
+- requirements: "Requirements"
+- design: "Design"
+- tasks: "Tasks"
+- execution: "Executing" with task progress
 
-## Behavior
+## File Indicators
 
-1. Read current spec from `./specs/.current-spec`
-2. Load state from `.ceo-ralph-state.json`
-3. Parse progress from tasks.md
-4. Display comprehensive status
+For each file, show:
+- [x] if file exists
+- [ ] if file does not exist
 
-## Output (Single Spec)
-
-```markdown
-## 📊 CEO Ralph Status
-
-### Current Spec: {specName}
-
-**Phase**: {phase}
-**Status**: {Active | Awaiting Approval | Paused | Completed}
-
-### Progress
-
-```
-Phase 1: ████████░░ 80% (4/5 tasks)
-Phase 2: ░░░░░░░░░░  0% (0/3 tasks)
-Phase 3: ░░░░░░░░░░  0% (0/2 tasks)
-Phase 4: ░░░░░░░░░░  0% (0/4 tasks)
-
-Overall: ████░░░░░░ 28% (4/14 tasks)
-```
-
-### Current Task
-
-**{taskId}**: {task title}
-**Status**: {status}
-**Attempt**: {n} of {max}
-
-### Recent Activity
-
-| Time | Event |
-|------|-------|
-| {time} | Task 1.4 completed |
-| {time} | Task 1.3 completed (2 attempts) |
-| {time} | Execution started |
-
-### Resource Usage
-
-| Model | Tokens | Est. Cost |
-|-------|--------|-----------|
-| Claude | {n} | ~${x} |
-| Codex | {n} | ~${x} |
-
-### Files
-
-| File | Status |
-|------|--------|
-| research.md | ✓ Complete |
-| requirements.md | ✓ Complete |
-| design.md | ✓ Complete |
-| tasks.md | ✓ Complete |
-| .progress.md | Updated {time} |
-
-### Next Action
-
-{What the user should do next}
-```
-
-## Output (All Specs)
-
-```markdown
-## 📊 CEO Ralph: All Specs
-
-| Spec | Phase | Progress | Status |
-|------|-------|----------|--------|
-| {name} | execution | 28% | ⟳ Active |
-| {name} | completed | 100% | ✓ Done |
-| {name} | design | 0% | ⏸ Paused |
-
-**Current**: {specName}
-
-Use `/ceo-ralph:switch {name}` to change active spec.
-```
-
-## State Read
-
-Reads from:
-- `./specs/.current-spec`
-- `./specs/{name}/.ceo-ralph-state.json`
-- `./specs/{name}/tasks.md`
-- `./specs/{name}/.progress.md`
-
-## Error Handling
-
-| Error | Action |
-|-------|--------|
-| No specs exist | Prompt to run `/ceo-ralph:start` |
-| State file corrupted | Attempt recovery, report issue |
-| Tasks file missing | Report incomplete spec |
+Example: `Files: [x] research [x] requirements [ ] design [ ] tasks`

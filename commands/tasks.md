@@ -1,134 +1,201 @@
 ---
-description: Break design into executable tasks
+description: Generate implementation tasks from design
 argument-hint: [spec-name]
-allowed-tools: [Read, Write, Edit, Glob, Grep, Task]
+allowed-tools: [Read, Write, Task, Bash, AskUserQuestion]
 ---
 
-# /ceo-ralph:tasks
+# Tasks Phase
 
-Break design into executable tasks.
+You are generating implementation tasks for a specification. Running this command implicitly approves the design phase.
 
-## Usage
+<mandatory>
+**YOU ARE A COORDINATOR, NOT A TASK PLANNER.**
+
+You MUST delegate ALL task planning to the `task-planner` subagent.
+Do NOT write task breakdowns, verification steps, or tasks.md yourself.
+</mandatory>
+
+## Determine Active Spec
+
+1. If `$ARGUMENTS` contains a spec name, use that
+2. Otherwise, read `./specs/.current-spec` to get active spec
+3. If no active spec, error: "No active spec. Run /ceo-ralph:new <name> first."
+
+## Validate
+
+1. Check `./specs/$spec/` directory exists
+2. Check `./specs/$spec/design.md` exists. If not, error: "Design not found. Run /ceo-ralph:design first."
+3. Check `./specs/$spec/requirements.md` exists
+4. Read `.ralph-state.json`
+5. Clear approval flag: update state with `awaitingApproval: false`
+
+## Gather Context
+
+Read:
+- `./specs/$spec/requirements.md` (required)
+- `./specs/$spec/design.md` (required)
+- `./specs/$spec/research.md` (if exists)
+- `./specs/$spec/.progress.md`
+
+## Interview
+
+<mandatory>
+**Skip interview if --quick flag detected in $ARGUMENTS.**
+
+If NOT quick mode, conduct interview using AskUserQuestion before delegating to subagent.
+</mandatory>
+
+### Quick Mode Check
+
+Check if `--quick` appears anywhere in `$ARGUMENTS`. If present, skip directly to "Execute Tasks Generation".
+
+### Tasks Interview
+
+Use AskUserQuestion to gather execution and deployment context:
 
 ```
-/ceo-ralph:tasks
+AskUserQuestion:
+  questions:
+    - question: "What testing depth is needed?"
+      options:
+        - "Standard - unit + integration (Recommended)"
+        - "Minimal - POC only, add tests later"
+        - "Comprehensive - include E2E"
+        - "Other"
+    - question: "Deployment considerations?"
+      options:
+        - "Standard CI/CD pipeline"
+        - "Feature flag needed"
+        - "Gradual rollout required"
+        - "Other"
 ```
 
-## Prerequisites
+### Adaptive Depth
 
-- Design phase complete
-- `design.md` exists in spec directory
-- State shows phase is ready for task planning
+If user selects "Other" for any question:
+1. Ask a follow-up question to clarify using AskUserQuestion
+2. Continue until clarity reached or 5 follow-up rounds complete
+3. Each follow-up should probe deeper into the "Other" response
 
-## Coordinator Principle
+### Interview Context Format
 
-**YOU ARE A COORDINATOR, NOT AN IMPLEMENTER.**
+After interview, format responses as:
 
-Never write task lists yourself. Delegate to the `task-planner` agent.
+```
+Interview Context:
+- Testing depth: [Answer]
+- Deployment considerations: [Answer]
+- Follow-up details: [Any additional clarifications]
+```
 
-## Behavior
+Store this context to include in the Task delegation prompt.
 
-1. Load state and verify design complete
-2. Read all spec files (research, requirements, design)
-3. Delegate to `task-planner` agent
-4. Task planner produces:
-   - POC-first ordered task list
-   - Parallel task identification [P]
-   - Verification checkpoints [VERIFY]
-   - Task dependencies
-   - Requirements traceability
-5. Output `tasks.md` to spec directory
-6. Update state with task count
-7. Present summary for approval
+## Execute Tasks Generation
 
-## Agent Delegation
+<mandatory>
+Use the Task tool with `subagent_type: task-planner` to generate tasks.
+ALL specs MUST follow POC-first workflow.
+</mandatory>
 
-```markdown
-Delegate to: task-planner
+Invoke task-planner agent with prompt:
+
+```
+You are creating implementation tasks for spec: $spec
+Spec path: ./specs/$spec/
 
 Context:
-- Spec name: {specName}
-- Research: {contents of research.md}
-- Requirements: {contents of requirements.md}
-- Design: {contents of design.md}
+- Requirements: [include requirements.md content]
+- Design: [include design.md content]
 
-Instructions:
-Follow the task-planner agent protocol to break the design
-into executable tasks using POC-first methodology.
+[If interview was conducted, include:]
+Interview Context:
+$interview_context
+
+Your task:
+1. Read requirements and design thoroughly
+2. Break implementation into POC-first phases:
+   - Phase 1: Make It Work (POC) - validate idea, skip tests
+   - Phase 2: Refactoring - clean up code
+   - Phase 3: Testing - unit, integration, e2e
+   - Phase 4: Quality Gates - lint, types, CI
+3. Create atomic, autonomous-ready tasks
+4. Each task MUST include:
+   - **Do**: Exact implementation steps
+   - **Files**: Exact file paths to create/modify
+   - **Done when**: Explicit success criteria
+   - **Verify**: Command to verify completion
+   - **Commit**: Conventional commit message
+   - _Requirements: references_
+   - _Principles: P-# references_
+   - _Design: references_
+5. Count total tasks
+6. Output to ./specs/$spec/tasks.md
+7. Include interview responses in an "Execution Context" section of tasks.md
+
+Use the tasks.md template with frontmatter:
+---
+spec: $spec
+phase: tasks
+total_tasks: <count>
+created: <timestamp>
+---
+
+Critical rules:
+- Tasks must be executable without human interaction
+- Each task = one commit
+- Verify command must be runnable
+- POC phase allows shortcuts, later phases clean up
 ```
+
+## Update State
+
+After tasks complete:
+
+1. Count total tasks from generated file
+2. Update `.ralph-state.json`:
+   ```json
+   {
+     "phase": "tasks",
+     "totalTasks": <count>,
+     "awaitingApproval": true,
+     ...
+   }
+   ```
+
+3. Update `.progress.md`:
+   - Mark design as implicitly approved
+   - Set current phase to tasks
+   - Update task count
+
+## Commit Spec (if enabled)
+
+Read `commitSpec` from `.ralph-state.json` (set during `/ceo-ralph:start`).
+
+If `commitSpec` is true:
+
+1. Stage tasks file:
+   ```bash
+   git add ./specs/$spec/tasks.md
+   ```
+2. Commit with message:
+   ```bash
+   git commit -m "spec($spec): add implementation tasks"
+   ```
+3. Push to current branch:
+   ```bash
+   git push -u origin $(git branch --show-current)
+   ```
+
+If commit or push fails, display warning but continue (don't block the workflow).
 
 ## Output
 
-```markdown
-## 📝 Task Planning Complete
-
-**Spec**: {specName}
-**Duration**: {time}
-
-### Task Summary
-
-| Phase | Tasks | Parallel |
-|-------|-------|----------|
-| Phase 1: POC | {n} | {m} |
-| Phase 2: Refactoring | {n} | {m} |
-| Phase 3: Testing | {n} | {m} |
-| Phase 4: Quality Gates | {n} | 0 |
-| **Total** | **{total}** | **{parallel}** |
-
-### Task Overview
-
-#### Phase 1: Make It Work
-- [ ] 1.1 {task title}
-- [ ] 1.2 {task title}
-- [ ] 1.3 [VERIFY] POC Checkpoint
-
-#### Phase 2: Refactoring
-- [ ] 2.1 {task title}
-- [ ] 2.2 [P] {parallel task}
-- [ ] 2.3 [P] {parallel task}
-
-#### Phase 3: Testing
-- [ ] 3.1 {task title}
-- [ ] 3.2 {task title}
-
-#### Phase 4: Quality Gates
-- [ ] 4.1 [VERIFY] Lint
-- [ ] 4.2 [VERIFY] Types
-- [ ] 4.3 [VERIFY] Tests
-- [ ] 4.4 [VERIFY] [CRITICAL] Build
-
-### Estimated Execution
-
-- **Sequential time**: ~{estimate}
-- **With parallelization**: ~{estimate}
-- **Codex workers needed**: {max parallel}
-
----
-
-**Status**: Awaiting Approval
-
-Review `./specs/{specName}/tasks.md` for full details.
-
-✅ To approve and start execution: `/ceo-ralph:implement`
-❌ To request changes: Provide feedback and run `/ceo-ralph:tasks` again
 ```
+Tasks phase complete for '$spec'.
 
-## State Updates
+Output: ./specs/$spec/tasks.md
+Total tasks: <count>
+[If commitSpec: "Spec committed and pushed."]
 
-```json
-{
-  "phase": "tasks",
-  "awaitingApproval": true,
-  "totalTasks": {count},
-  "completedTasks": 0,
-  "updatedAt": "{timestamp}"
-}
+Next: Review tasks.md, then run /ceo-ralph:implement to start execution
 ```
-
-## Error Handling
-
-| Error | Action |
-|-------|--------|
-| Design not complete | Prompt to complete design first |
-| Too many tasks | Break into smaller specs, suggest splitting |
-| Circular dependencies | Reorder tasks, report issue |

@@ -49,11 +49,30 @@ codex login
 
 This configures Codex MCP in `~/.claude/settings.json`.
 
-### Step 5: Restart Claude Code
+### Step 5: (Optional) Enable Remote UI Approvals
+
+If you want approvals accessible from anywhere, configure the Remote UI:
+
+```bash
+python remote-ui/remote_ui.py enable
+```
+
+This prompts for a password, starts the server, and launches a Cloudflare Quick Tunnel.
+
+If you prefer manual steps, you can still run:
+
+```bash
+cloudflared tunnel --url http://127.0.0.1:8123
+python remote-ui/remote_ui.py set-public-url https://your-url.trycloudflare.com
+```
+
+See `docs/REMOTE_UI.md` for details.
+
+### Step 6: Restart Claude Code
 
 Restart Claude Code to load the MCP server and plugin.
 
-### Step 6: Verify Installation
+### Step 7: Verify Installation
 
 ```bash
 # Check if the plugin is installed
@@ -123,7 +142,7 @@ your-project/
 ├── specs/                     # Created when you start specs
 │   ├── .current-spec         # Active spec name
 │   └── my-feature/
-│       ├── .ceo-ralph-state.json
+│       ├── .ralph-state.json
 │       ├── .progress.md
 │       ├── research.md
 │       ├── requirements.md

@@ -63,6 +63,17 @@ Review `research.md` and either:
 - Approve: Run `/ceo-ralph:requirements`
 - Request changes: Provide feedback and run `/ceo-ralph:research` again
 
+Remote approval (optional, applies to all approval gates):
+```bash
+python remote-ui/remote_ui.py request \
+  --title "Approve research findings" \
+  --prompt "Review research.md and approve to continue."
+```
+Then wait for the decision:
+```bash
+python remote-ui/remote_ui.py wait <request-id>
+```
+
 ## Phase 2: Requirements
 
 ### Purpose
@@ -88,6 +99,11 @@ Define clear, testable requirements that capture what needs to be built.
 # Requirements: my-feature
 
 ## Functional Requirements
+
+## Principles
+- P-1: Non-negotiable rule or constraint
+- P-2: Security, privacy, or compliance rule
+- P-3: Performance or reliability guardrail
 
 ### FR-1: User Login
 **As a** user
@@ -190,12 +206,14 @@ Break design into atomic, executable tasks.
   - **Files**: src/components/LoginForm.tsx
   - **Done when**: Form renders and captures input
   - **Worker**: codex
+  - **Principles**: P-1
 
 - [ ] 1.2 Implement auth service
   - **Do**: Create service to call login API
   - **Files**: src/services/auth.ts
   - **Done when**: Service can make API call
   - **Worker**: codex
+  - **Principles**: P-2
 
 - [ ] 1.3 [VERIFY] POC Checkpoint
   - **Do**: Verify basic login flow works

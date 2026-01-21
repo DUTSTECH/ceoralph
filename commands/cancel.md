@@ -1,83 +1,64 @@
 ---
-description: Cancel the current spec and cleanup
-argument-hint: [--keep-files]
-allowed-tools: [Read, Write, Edit, Bash, AskUserQuestion]
+description: Cancel active execution loop and cleanup state
+argument-hint: [spec-name]
+allowed-tools: [Read, Bash, Task]
 ---
+
 # /ceo-ralph:cancel
 
-Cancel current spec and cleanup.
+Cancel the active execution loop and clean up state files.
 
-## Usage
+## Determine Target Spec
 
-```
-/ceo-ralph:cancel
-/ceo-ralph:cancel --keep-files
-```
+1. If `$ARGUMENTS` contains a spec name, use that
+2. Otherwise, read `./specs/.current-spec` to get active spec
+3. If no active spec, inform user there's nothing to cancel
 
-## Arguments
+## Check State
 
-- `--keep-files`: Don't delete spec files, just reset state
+1. Check if `./specs/$spec/.ralph-state.json` exists
+2. If not, inform user no active loop for this spec
 
-## Behavior
+## Read Current State
 
-1. Confirm cancellation with user
-2. Stop any running execution
-3. Clean up state
-4. Optionally remove spec files
-5. Clear current spec pointer
+If state file exists, read and display:
+- Current phase
+- Task progress (taskIndex/totalTasks)
+- Iteration count
 
-## Confirmation
+## Cleanup
 
-```markdown
-## ⚠️ Cancel Spec?
+1. Stop any active execution (if running)
+2. Delete state file:
+   ```bash
+   rm ./specs/$spec/.ralph-state.json
+   ```
+3. Keep `.progress.md` as it contains valuable context
 
-**Spec**: {specName}
-**Progress**: {completed}/{total} tasks ({percent}%)
-
-This will:
-- Stop execution immediately
-- Delete `.ceo-ralph-state.json`
-{if not --keep-files}
-- Delete all spec files (research.md, requirements.md, etc.)
-{/if}
-
-**Type `yes` to confirm or `no` to abort.**
-```
-
-## Output (After Confirmation)
-
-```markdown
-## 🛑 Spec Cancelled
-
-**Spec**: {specName}
-
-### Cleanup Complete
-
-- [x] Execution stopped
-- [x] State file removed
-{if not --keep-files}
-- [x] Spec files removed
-{else}
-- [ ] Spec files kept at `./specs/{specName}/`
-{/if}
-
-### To Start Fresh
+## Output
 
 ```
-/ceo-ralph:start
+Canceled execution for spec: $spec
+
+State before cancellation:
+- Phase: <phase>
+- Progress: <taskIndex>/<totalTasks> tasks
+- Iterations: <globalIteration>
+
+Cleanup:
+- [x] Removed .ralph-state.json
+- [ ] Kept .progress.md (contains history)
+
+To resume later:
+- Run /ceo-ralph:implement to restart execution
+- Progress file retains completed tasks and learnings
 ```
+
+## If No Active Loop
+
 ```
+No active execution loop found.
 
-## State Changes
-
-- Deletes `.ceo-ralph-state.json`
-- Clears `./specs/.current-spec`
-- Optionally deletes spec directory
-
-## Error Handling
-
-| Error | Action |
-|-------|--------|
-| No active spec | Report "Nothing to cancel" |
-| File deletion fails | Report which files couldn't be deleted |
-| User aborts | Report "Cancellation aborted" |
+To start a new spec: /ceo-ralph:new <name>
+To check status: /ceo-ralph:status
+```

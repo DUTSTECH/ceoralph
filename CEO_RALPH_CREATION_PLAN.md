@@ -216,7 +216,7 @@ A Claude Code plugin that combines the **spec-driven development workflow** of S
 - Parse tasks from tasks.md
 - Prepare context packages for workers
 - Manage parallel execution for [P] tasks
-- Track state in .ceo-ralph-state.json
+- Track state in .ralph-state.json
 - Coordinate between CEO and workers
 
 ### 4.4 Verification System
@@ -380,7 +380,7 @@ server.setRequestHandler("tools/call", async (request) => {
 ### 6.2 State Management
 
 ```json
-// .ceo-ralph-state.json
+// .ralph-state.json
 {
   "specName": "my-feature",
   "phase": "execution",
@@ -539,7 +539,7 @@ ceo-ralph/
   - `plugins/ceo-ralph/.claude-plugin/plugin.json`
 
 - [ ] **Step 1.3**: Define state schema
-  - Create `.ceo-ralph-state.json` schema
+  - Create `.ralph-state.json` schema
   - Define state transitions
   - Implement state validation
 

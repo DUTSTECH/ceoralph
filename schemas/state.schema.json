@@ -1,166 +1,89 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ceo-ralph",
   "title": "CEO Ralph State",
-  "description": "State tracking for CEO Ralph spec execution",
+  "description": "Runtime state for spec execution loop (specum-compatible)",
   "type": "object",
-  "required": ["specName", "phase", "createdAt"],
+  "required": ["source", "name", "basePath", "phase"],
   "properties": {
-    "specName": {
+    "source": {
       "type": "string",
-      "description": "Name of the current spec"
+      "enum": ["spec", "plan", "direct"],
+      "description": "Origin of tasks: spec (full workflow), plan (skip to tasks), direct (manual tasks.md)"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Spec name in kebab-case"
     },
     "basePath": {
       "type": "string",
-      "description": "Base path for spec files (./specs/{specName})"
+      "description": "Path to spec directory (e.g., ./specs/my-feature)"
     },
     "phase": {
       "type": "string",
-      "enum": ["research", "requirements", "design", "tasks", "execution", "completed", "cancelled"],
-      "description": "Current phase of the spec workflow"
+      "enum": ["research", "requirements", "design", "tasks", "execution"],
+      "description": "Current workflow phase"
+    },
+    "taskIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Current task index (0-based)"
+    },
+    "totalTasks": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Total number of tasks in tasks.md"
+    },
+    "taskIteration": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1,
+      "description": "Current iteration for this task (resets per task)"
+    },
+    "maxTaskIterations": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 5,
+      "description": "Max retries per task before failure"
+    },
+    "globalIteration": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1,
+      "description": "Total loop iterations across all tasks"
+    },
+    "maxGlobalIterations": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 100,
+      "description": "Safety cap on total iterations"
+    },
+    "commitSpec": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to commit spec files after each phase"
     },
     "awaitingApproval": {
       "type": "boolean",
       "default": false,
       "description": "Whether waiting for user approval to proceed"
     },
-    "quickMode": {
-      "type": "boolean",
-      "default": false,
-      "description": "Skip approval gates and auto-proceed"
-    },
-    "currentTask": {
-      "type": "object",
-      "description": "Current task being executed",
-      "properties": {
-        "index": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Index of current task in tasks.md"
-        },
-        "id": {
-          "type": "string",
-          "description": "Task identifier (e.g., '1.1', '2.3')"
-        },
-        "iteration": {
-          "type": "integer",
-          "minimum": 1,
-          "default": 1,
-          "description": "Current retry iteration for this task"
-        },
-        "maxIterations": {
-          "type": "integer",
-          "minimum": 1,
-          "default": 3,
-          "description": "Maximum retries before escalation"
-        },
-        "status": {
-          "type": "string",
-          "enum": ["pending", "delegated", "reviewing", "verified", "failed", "escalated"],
-          "description": "Current task status"
-        },
-        "workerAttempts": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "timestamp": { "type": "string", "format": "date-time" },
-              "workerId": { "type": "string" },
-              "result": { "type": "string", "enum": ["success", "needs_revision", "failed"] },
-              "feedback": { "type": "string" },
-              "tokensUsed": { "type": "integer" }
-            }
-          },
-          "description": "History of worker attempts for this task"
-        }
-      }
-    },
-    "totalTasks": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Total number of tasks in tasks.md"
-    },
-    "completedTasks": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Number of completed tasks"
-    },
-    "globalIteration": {
-      "type": "integer",
-      "minimum": 1,
-      "default": 1,
-      "description": "Total iterations across all tasks"
-    },
-    "maxGlobalIterations": {
-      "type": "integer",
-      "minimum": 1,
-      "default": 100,
-      "description": "Maximum global iterations before stopping"
-    },
-    "paused": {
-      "type": "boolean",
-      "default": false,
-      "description": "Whether execution is paused"
-    },
-    "pauseReason": {
-      "type": "string",
-      "description": "Reason for pause if paused"
-    },
-    "usage": {
-      "type": "object",
-      "description": "Token usage tracking",
-      "properties": {
-        "claude": {
-          "type": "object",
-          "properties": {
-            "totalTokens": { "type": "integer", "default": 0 },
-            "researchTokens": { "type": "integer", "default": 0 },
-            "requirementsTokens": { "type": "integer", "default": 0 },
-            "designTokens": { "type": "integer", "default": 0 },
-            "planningTokens": { "type": "integer", "default": 0 },
-            "reviewTokens": { "type": "integer", "default": 0 }
-          }
-        },
-        "codex": {
-          "type": "object",
-          "properties": {
-            "totalTokens": { "type": "integer", "default": 0 },
-            "taskTokens": {
-              "type": "object",
-              "additionalProperties": { "type": "integer" }
-            }
-          }
-        }
-      }
-    },
-    "qualityCommands": {
-      "type": "object",
-      "description": "Discovered quality commands from project",
-      "properties": {
-        "lint": { "type": "string" },
-        "test": { "type": "string" },
-        "build": { "type": "string" },
-        "typeCheck": { "type": "string" }
-      }
-    },
     "relatedSpecs": {
       "type": "array",
-      "items": { "type": "string" },
-      "description": "Related spec names discovered during research"
-    },
-    "createdAt": {
-      "type": "string",
-      "format": "date-time",
-      "description": "When the spec was created"
-    },
-    "updatedAt": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Last update timestamp"
-    },
-    "completedAt": {
-      "type": "string",
-      "format": "date-time",
-      "description": "When the spec was completed"
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "relevance": { "enum": ["high", "medium", "low"] },
+          "reason": { "type": "string" },
+          "mayNeedUpdate": { "type": "boolean" }
+        },
+        "required": ["name", "relevance", "reason"]
+      },
+      "description": "Existing specs related to this one"
     }
   }
 }

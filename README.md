@@ -1,183 +1,271 @@
+<div align="center">
+
 # CEO Ralph
 
-> Claude Opus 4.5 as CEO with GPT Codex Workers
+### *"Me fail specs? That's unpossible!"*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-blueviolet)](https://claude.ai/code)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-CEO Ralph is a Claude Code plugin that combines **spec-driven development** with **multi-model delegation**. Claude Opus 4.5 acts as the "CEO" - researching, planning, and reviewing - while GPT Codex agents serve as "workers" executing the actual code implementation.
+**Spec-driven development for Claude Code. Task-by-task execution with fresh context per task.**
 
-Based on the [Smart Ralph](https://github.com/tzachbon/smart-ralph) workflow with Codex delegation.
+Codex MCP + Spec-Driven Development = <3
 
-## Core Principle
+[Quick Start](#-quick-start) | [Commands](#-commands) | [How It Works](#-how-it-works) | [Troubleshooting](#-troubleshooting)
 
-> **"YOU ARE A COORDINATOR, NOT AN IMPLEMENTER."**
+</div>
 
-Claude plans, reviews, and decides. Codex writes code and makes changes.
+---
 
-## Key Features
+## What is this?
 
-- **Spec-Driven Development**: Structured phases from research to implementation
-- **User Approval Gates**: Review and approve each phase before proceeding
-- **Multi-Model Delegation**: Claude plans, Codex executes
-- **Autonomous Execution Loop**: Continues until all tasks complete or escalation needed
-- **4-Layer Verification**: Every task verified before marking complete
-- **Quick Mode**: Skip approvals for trusted workflows
-- **Multi-Spec Support**: Work on multiple features with `/switch`
+CEO Ralph is a Claude Code plugin that turns your vague feature ideas into structured specs, then executes them task-by-task. Like having a tiny product team in your terminal.
 
-## Workflow
-
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Research   │────▶│Requirements │────▶│   Design    │────▶│   Tasks     │────▶│  Execute    │
-│             │     │             │     │             │     │             │     │             │
-│ Claude      │     │ Claude      │     │ Claude      │     │ Claude      │     │ Claude+Codex│
-└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
-      ↓                   ↓                   ↓                   ↓                   ↓
-  research.md      requirements.md      design.md          tasks.md            code!
-      ↓                   ↓                   ↓                   ↓
-  [Approval]         [Approval]          [Approval]         [Approval]
+```text
+You: "Add user authentication"
+Ralph: *creates research.md, requirements.md, design.md, tasks.md*
+Ralph: *executes each task with fresh context*
+Ralph: "I'm helping!"
 ```
 
-## Quick Start
+## Why "Ralph"?
 
-### Prerequisites
+Named after the [Ralph agentic loop pattern](https://ghuntley.com/ralph/) and everyone's favorite Springfield student. Ralph doesn't overthink. Ralph just does the next task. Be like Ralph.
 
-- Claude Code CLI installed and authenticated
-- Codex CLI installed and authenticated (`codex login`)
+---
 
-### Installation
+## Requirements
+
+Codex MCP is required for task execution. Configure it once:
 
 ```bash
-# Clone the repository
-git clone https://github.com/dutsAI/ceo-ralph.git
-cd ceo-ralph
-
-# Install the plugin
-/plugin marketplace add dutsAI/ceo-ralph
-/plugin install ceo-ralph
-
-# Configure MCP (one-time)
 /ceo-ralph:setup
 ```
 
-### Usage
+Codex MCP provides the execution loop. CEO Ralph provides the spec-driven workflow on top.
+
+---
+
+## Installation
+
+### From Marketplace
 
 ```bash
-# Start a new feature
-/ceo-ralph:start user-auth "Add user authentication with JWT"
+# Configure Codex MCP
+/ceo-ralph:setup
 
-# Or create new explicitly
-/ceo-ralph:new user-auth "Add user authentication with JWT"
+# Add the marketplace
+/plugin marketplace add DUTSTECH/ceoralph
 
-# Run through phases (each requires approval)
-/ceo-ralph:research
+# Install the plugin
+/plugin install ceo-ralph@dutstech-ceoralph
+
+# Restart Claude Code
+```
+
+### From GitHub
+
+```bash
+# Configure Codex MCP
+/ceo-ralph:setup
+
+/plugin install https://github.com/DUTSTECH/ceoralph
+```
+
+### Local Development
+
+```bash
+# Configure Codex MCP
+/ceo-ralph:setup
+
+git clone https://github.com/DUTSTECH/ceoralph.git
+cd ceoralph
+claude --plugin-dir $(pwd)
+```
+
+---
+
+## Quick Start
+
+```bash
+# The smart way (auto-detects resume or new)
+/ceo-ralph:start user-auth Add JWT authentication
+
+# Quick mode (skip spec phases, auto-generate everything)
+/ceo-ralph:start "Add user auth" --quick
+
+# The step-by-step way
+/ceo-ralph:new user-auth Add JWT authentication
 /ceo-ralph:requirements
 /ceo-ralph:design
 /ceo-ralph:tasks
-
-# Start execution with Codex workers
 /ceo-ralph:implement
-
-# Check progress anytime
-/ceo-ralph:status
 ```
 
-### Quick Mode
-
-Skip approval gates for trusted workflows:
-
-```bash
-/ceo-ralph:start "Add dark mode toggle" --quick
-```
-
-### Multi-Spec Support
-
-```bash
-# List all specs
-/ceo-ralph:switch
-
-# Switch to a different spec
-/ceo-ralph:switch dark-mode
-
-# Update specs after implementation
-/ceo-ralph:refactor
-```
+---
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `/ceo-ralph:start` | Smart entry - resume or create new |
-| `/ceo-ralph:new` | Create new spec, start research |
-| `/ceo-ralph:research` | Run research phase |
-| `/ceo-ralph:requirements` | Generate requirements |
-| `/ceo-ralph:design` | Create technical design |
-| `/ceo-ralph:tasks` | Break into executable tasks |
-| `/ceo-ralph:implement` | Execute tasks via Codex |
-| `/ceo-ralph:status` | Show current progress |
-| `/ceo-ralph:switch` | Change active spec |
-| `/ceo-ralph:refactor` | Update specs after implementation |
-| `/ceo-ralph:pause` | Pause execution |
-| `/ceo-ralph:resume` | Resume paused execution |
-| `/ceo-ralph:cancel` | Cancel and cleanup |
-| `/ceo-ralph:setup` | Configure Codex MCP |
-| `/ceo-ralph:feedback` | Submit feedback |
+| Command | What it does |
+|---------|--------------|
+| `/ceo-ralph:start [name] [goal]` | Smart entry: resume existing or create new |
+| `/ceo-ralph:start [goal] --quick` | Quick mode: auto-generate all specs and execute |
+| `/ceo-ralph:new <name> [goal]` | Create new spec, start research |
+| `/ceo-ralph:research` | Run/re-run research phase |
+| `/ceo-ralph:requirements` | Generate requirements from research |
+| `/ceo-ralph:design` | Generate technical design |
+| `/ceo-ralph:tasks` | Break design into executable tasks |
+| `/ceo-ralph:implement` | Execute tasks one-by-one |
+| `/ceo-ralph:status` | Show all specs and progress |
+| `/ceo-ralph:switch <name>` | Change active spec |
+| `/ceo-ralph:cancel` | Cancel loop, cleanup state |
 | `/ceo-ralph:help` | Show help |
 
-## Task Markers
+---
 
-| Marker | Meaning |
-|--------|---------|
-| `[P]` | Parallel execution |
-| `[VERIFY]` | Quality checkpoint |
-| `[POC]` | Proof of concept first |
-| `[CRITICAL]` | Critical path (5 retries) |
-| `[OPTIONAL]` | Optional (2 retries) |
+## How It Works
+
+```text
+        "I want a feature!"
+               |
+               v
+    +---------------------+
+    |      Research       |  <- Analyzes codebase, searches web
+    +---------------------+
+               |
+               v
+    +---------------------+
+    |    Requirements     |  <- User stories, acceptance criteria
+    +---------------------+
+               |
+               v
+    +---------------------+
+    |       Design        |  <- Architecture, patterns, decisions
+    +---------------------+
+               |
+               v
+    +---------------------+
+    |       Tasks         |  <- POC-first task breakdown
+    +---------------------+
+               |
+               v
+    +---------------------+
+    |     Execution       |  <- Task-by-task with fresh context
+    +---------------------+
+               |
+               v
+          "I did it!"
+```
+
+### The Agents
+
+Each phase uses a specialized sub-agent:
+
+| Phase | Agent | Superpower |
+|-------|-------|------------|
+| Research | `research-analyst` | Web search, codebase analysis, feasibility checks |
+| Requirements | `product-manager` | User stories, acceptance criteria, business value |
+| Design | `architect-reviewer` | Architecture patterns, technical trade-offs |
+| Tasks | `task-planner` | POC-first breakdown, task sequencing |
+| Execution | `spec-executor` | Autonomous implementation, quality gates |
+
+### Task Execution Workflow
+
+Tasks follow a 4-phase structure:
+
+1. **Make It Work** - POC validation, skip tests initially
+2. **Refactoring** - Clean up the code
+3. **Testing** - Unit, integration, e2e tests
+4. **Quality Gates** - Lint, types, CI checks
+
+### Lightweight Governance
+
+CEO Ralph uses a simple Principles + References model:
+- Define non-negotiable Principles (P-1, P-2...) in `requirements.md`
+- Every task references relevant Principles alongside FR/AC and design
+
+---
 
 ## Project Structure
 
+```text
+ceoralph/
+├── .claude-plugin/
+│   └── marketplace.json
+├── agents/             # Sub-agent definitions
+├── commands/           # Slash commands
+├── hooks/              # Stop watcher
+├── templates/          # Spec templates
+└── schemas/            # Validation schemas
 ```
-ceo-ralph/
-├── .claude-plugin/       # Plugin configuration
-├── agents/               # AI agent definitions
-├── commands/             # Slash commands
-├── skills/               # Skill definitions
-├── templates/            # Spec templates
-├── schemas/              # JSON schemas
-├── examples/             # Example specs
-└── docs/                 # Documentation
+
+### Your Specs
+
+Specs live in `./specs/` in your project:
+
+```text
+./specs/
+├── .current-spec           # Active spec name
+└── my-feature/
+    ├── .ralph-state.json   # Loop state (deleted on completion)
+    ├── .progress.md        # Progress tracking
+    ├── research.md
+    ├── requirements.md
+    ├── design.md
+    └── tasks.md
 ```
 
-## Documentation
+---
 
-- [Architecture](docs/ARCHITECTURE.md) - System design and components
-- [Setup Guide](docs/SETUP.md) - Detailed installation instructions
-- [Workflow Guide](docs/WORKFLOW.md) - How to use CEO Ralph
-- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
+## Notes
 
-## Configuration
+CEO Ralph follows the specum workflow while delegating all task execution to Codex MCP.
 
-### Environment Variables
+## Troubleshooting
 
-```bash
-CEO_RALPH_MAX_RETRIES=3         # Max retries per task (default: 3)
-CEO_RALPH_MAX_ITERATIONS=100    # Max global iterations (default: 100)
-CEO_RALPH_PARALLEL_LIMIT=3      # Max parallel workers (default: 3)
-```
+**"Codex MCP not configured"?**
+Run `/ceo-ralph:setup` and restart Claude Code.
+
+**Task keeps failing?**
+After max iterations, the loop stops. Check `.progress.md` for errors. Fix manually, then `/ceo-ralph:implement` to resume.
+
+**Want to start over?**
+`/ceo-ralph:cancel` cleans up state. Then start fresh.
+
+**Resume existing spec?**
+Just `/ceo-ralph:start` - it auto-detects and continues where you left off.
+
+**More issues?** See the full [Troubleshooting Guide](TROUBLESHOOTING.md).
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please read the contributing guidelines first.
+PRs welcome! This project is friendly to first-time contributors.
 
-Use `/ceo-ralph:feedback` to submit issues or feature requests.
+1. Fork it
+2. Create your feature branch (`git checkout -b feature/amazing`)
+3. Commit your changes
+4. Push to the branch
+5. Open a PR
 
-## License
-
-MIT License - see [LICENSE](LICENSE) for details.
+---
 
 ## Credits
 
-Inspired by:
-- [Smart Ralph](https://github.com/tzachbon/smart-ralph) - Spec-driven development
-- [Claude Delegator](https://github.com/jarrodwatts/claude-delegator) - Multi-model delegation
-- [Ralph Wiggum Loop](https://ghuntley.com/ralph/) - Autonomous execution pattern
+- [Ralph agentic loop pattern](https://ghuntley.com/ralph/) by Geoffrey Huntley
+- Built for [Claude Code](https://claude.ai/code)
+- Inspired by every developer who wished their AI could just figure out the whole feature
+
+---
+
+<div align="center">
+
+**Made with confusion and determination**
+
+*"The doctor said I wouldn't have so many nosebleeds if I kept my finger outta there."*
+
+MIT License
+
+</div>

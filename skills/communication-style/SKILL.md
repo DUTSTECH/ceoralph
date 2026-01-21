@@ -1,173 +1,106 @@
 ---
 name: communication-style
-description: Output style guide for concise, scannable, actionable communication
+description: Output rules for all agents - concise, scannable, actionable. Based on Matt Pocock's planning principles.
 ---
 
 # Communication Style
 
-Style guide for all CEO Ralph outputs. Based on Matt Pocock's planning principles.
+## Core Rule
 
-## Core Principle
+**Be extremely concise. Sacrifice grammar for concision.**
 
-> **"Be extremely concise. Sacrifice grammar for concision."**
+## Why
 
-Why:
-- Plans shouldn't be lengthy essays
-- Terminal reading flows bottom-up
-- Scanning beats reading
-- Action items must be visible
+- Plans shouldn't be novels
+- Terminal reads bottom-up
+- Scanning > reading
+- Less tokens = faster, cheaper
 
-## Output Structure
+## Output Rules
 
-All outputs follow this sequence:
+### 1. Brevity First
+
+| Instead of | Write |
+|------------|-------|
+| "The user will be able to..." | "User can..." |
+| "This component is responsible for..." | "Handles..." |
+| "In order to achieve this, we need to..." | "Requires:" |
+| "It should be noted that..." | (delete) |
+
+**Use:**
+- Fragments over full sentences
+- Tables over paragraphs
+- Bullets over prose
+- Diagrams over descriptions
+
+### 2. Structure for Scanning
+
+Every output follows this order:
 
 ```
-1. Overview (2-3 sentences max)
+1. Brief overview (2-3 sentences MAX)
 2. Main content (tables, bullets, diagrams)
-3. Unresolved questions
-4. Action steps (numbered, at the END)
+3. Unresolved questions (if any)
+4. Numbered action steps (ALWAYS LAST)
 ```
 
-Action steps go LAST because terminal scrolls to bottom—make them maximally visible.
+### 3. End with Action Steps
 
-## Formatting Rules
+**ALWAYS** end with numbered concrete steps.
 
-### Prefer Tables Over Prose
+```markdown
+## Next Steps
 
-❌ Bad:
-```
-The system has three main components. First, there's the API layer
-which handles incoming requests. Second, there's the service layer
-which contains business logic. Third, there's the data layer...
-```
-
-✅ Good:
-```
-| Component | Purpose |
-|-----------|---------|
-| API | Request handling |
-| Service | Business logic |
-| Data | Persistence |
+1. Create auth module at src/auth/
+2. Add JWT dependency
+3. Implement login endpoint
+4. Add tests
 ```
 
-### Prefer Bullets Over Paragraphs
+This is the LAST thing visible in terminal. Most important = most visible.
 
-❌ Bad:
-```
-The login flow starts when the user submits their credentials.
-The system then validates the input format. If valid, it checks
-against the database. If the credentials match, a JWT is generated.
-```
+### 4. Surface Questions Early
 
-✅ Good:
-```
-Login flow:
-1. User submits credentials
-2. Validate input format
-3. Check database
-4. Generate JWT if match
+Before action steps, list unresolved questions:
+
+```markdown
+## Unresolved Questions
+
+- OAuth provider preference? (Google, GitHub, both)
+- Session duration requirement?
+- Rate limiting needed?
 ```
 
-### Prefer Diagrams Over Descriptions
+Catches ambiguities before they become bugs.
 
-❌ Bad:
-```
-The request flows from the client to the API gateway,
-then to the authentication service, then to the user service...
-```
+## Anti-Patterns
 
-✅ Good:
-```
-Client → Gateway → Auth → User Service → Database
-```
+| Don't | Do |
+|-------|-----|
+| Long prose explanations | Bullet points |
+| Nested sub-bullets (3+ levels) | Flat structure, tables |
+| "Let me explain..." | (just explain) |
+| Repeating context | Reference by ID |
+| Hedging language | Direct statements |
 
-## Brevity Patterns
+## Examples
 
-| Instead of... | Write... |
-|---------------|----------|
-| "We will implement" | "Implement" |
-| "The system should" | "Should" |
-| "In order to" | "To" |
-| "It is important to note that" | (delete) |
-| "At this point in time" | "Now" |
-| "Due to the fact that" | "Because" |
-
-## Surface Questions Early
-
-Always list ambiguities BEFORE action items:
+### Bad (verbose)
 
 ```
-## Questions
-- Auth flow: OAuth or JWT?
-- Storage: Redis or in-memory?
-
-## Actions
-1. Confirm auth approach
-2. Set up project structure
+The authentication system will need to handle user login
+functionality. In order to accomplish this, we will need
+to implement a JWT-based authentication mechanism that
+allows users to securely log in to the application.
 ```
 
-## Avoid
+### Good (concise)
 
-- Long prose explanations
-- Nested bullets (3+ levels)
-- Hedging language ("perhaps", "might", "could potentially")
-- Repeating context already established
-- Explaining what you're about to do
-
-## Example: Phase Summary
-
-❌ Too verbose:
 ```
-## Research Phase Complete
+Auth system: JWT-based login
 
-I have completed the research phase for this specification.
-During this phase, I investigated the existing codebase patterns
-and found several relevant files. I also searched the web for
-best practices and discovered...
+Components:
+- Login endpoint: POST /auth/login
+- Token generation: JWT with 24h expiry
+- Middleware: verify token on protected routes
 ```
-
-✅ Concise:
-```
-## Research Complete
-
-| Aspect | Finding |
-|--------|---------|
-| Pattern | Repository pattern used |
-| Stack | Express + TypeScript |
-| Tests | Jest, 80% coverage |
-
-**Questions**:
-- Auth library preference?
-
-**Next**: `/ceo-ralph:requirements`
-```
-
-## Delegation Output
-
-When delegating to Codex, keep context packages focused:
-
-```json
-{
-  "task": "Implement login form",
-  "files": ["src/components/Form.tsx"],
-  "acceptance": ["Has email input", "Has password input", "Submits"]
-}
-```
-
-Not:
-```json
-{
-  "task": "We need to implement a login form component that allows users to enter their credentials...",
-  "context": "In this codebase, we use React for the frontend and we've established a pattern where all forms should follow the existing Form.tsx pattern which you can find at src/components/Form.tsx. This pattern involves using controlled components with React hooks for state management and...",
-  ...
-}
-```
-
-## Terminal-First Design
-
-Remember: Users read terminal output bottom-up.
-
-Structure for scannability:
-1. Quick status at top (what happened)
-2. Details in middle (if they want to scroll up)
-3. **Actions at bottom** (what to do next)

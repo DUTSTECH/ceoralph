@@ -96,3 +96,20 @@ Next steps:
 1. Restart Claude Code to load MCP server
 2. Start a spec: /ceo-ralph:start
 ```
+
+## Optional: Remote UI Approvals
+
+If you want approvals accessible from anywhere, configure the Remote UI:
+
+```bash
+python remote-ui/remote_ui.py enable
+```
+
+This prompts for a password, starts the server, and launches a Cloudflare Quick Tunnel.
+
+To expose it via HTTPS manually (free):
+
+```bash
+cloudflared tunnel --url http://127.0.0.1:8123
+python remote-ui/remote_ui.py set-public-url https://your-url.trycloudflare.com
+```

@@ -89,6 +89,19 @@ Workers receive focused context packages and implement specific tasks:
 - Output file modifications
 - Signal completion or blockers
 
+### 4. Remote UI (Optional)
+
+The Remote UI is an optional approval dashboard served locally and exposed via a free HTTPS tunnel. It allows approvals and input to be provided from any device while the plugin is running.
+
+- Local server: `127.0.0.1:8123`
+- Auth: password + 32-byte access key (rotatable)
+- Transport: HTTPS via Cloudflare Quick Tunnel
+- Storage: `~/.ceo-ralph/remote-ui/requests.json`
+
+### 5. Hooks (Stop Cleanup)
+
+CEO Ralph includes a Stop hook that cleans up `.ralph-state.json` and stale parallel progress files when the session ends.
+
 ## Data Flow
 
 ### Phase Flow
@@ -147,30 +160,22 @@ research.md    requirements.md     design.md      tasks.md        code!
 
 ## State Management
 
-### State File: `.ceo-ralph-state.json`
+### State File: `.ralph-state.json`
 
 ```json
 {
-  "specName": "my-feature",
+  "source": "spec",
+  "name": "my-feature",
   "basePath": "./specs/my-feature",
   "phase": "execution",
-  "awaitingApproval": false,
-  "quickMode": false,
-  "currentTask": {
-    "index": 3,
-    "id": "1.3",
-    "iteration": 1,
-    "maxIterations": 3,
-    "status": "reviewing"
-  },
+  "taskIndex": 3,
   "totalTasks": 14,
-  "completedTasks": 2,
+  "taskIteration": 1,
+  "maxTaskIterations": 5,
   "globalIteration": 5,
   "maxGlobalIterations": 100,
-  "usage": {
-    "claude": { "totalTokens": 15000 },
-    "codex": { "totalTokens": 45000 }
-  }
+  "commitSpec": true,
+  "awaitingApproval": false
 }
 ```
 

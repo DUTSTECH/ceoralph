@@ -6,155 +6,158 @@ allowed-tools: [Read]
 
 # /ceo-ralph:help
 
-Show help and available commands.
+Show help for CEO Ralph commands and workflow.
 
-## Usage
+## Overview
 
-```
-/ceo-ralph:help
-/ceo-ralph:help [command]
-```
+CEO Ralph is a spec-driven development plugin that guides you through research, requirements, design, and task generation phases, then executes tasks autonomously with Codex MCP.
 
-## Arguments
+## Commands
 
-- `command` (optional): Get detailed help for a specific command
-
-## Output (General Help)
-
-```markdown
-## CEO Ralph Help
-
-**CEO Ralph** - Claude Opus as CEO with Codex Workers
-
-Claude (Opus 4.5) acts as the CEO, handling research, planning, and review.
-GPT Codex workers handle code implementation under Claude's supervision.
-
-**Core Principle**: "You are a COORDINATOR, not an IMPLEMENTER."
-
-### Workflow
-
-```
-/ceo-ralph:start → Research → Requirements → Design → Tasks → Execute
-                      ↓            ↓           ↓        ↓        ↓
-                  research.md  requirements.md design.md tasks.md code!
-```
-
-### Commands
-
-**Getting Started**
 | Command | Description |
 |---------|-------------|
-| `/ceo-ralph:start [name] [goal]` | Smart entry - resume or create new |
-| `/ceo-ralph:new <name> [goal]` | Create new spec, start research |
-| `/ceo-ralph:setup` | Configure Codex MCP |
+| `/ceo-ralph:start [name] [goal]` | Smart entry point: resume or create new |
+| `/ceo-ralph:start [goal] --quick` | Quick mode: auto-generate all specs and execute |
+| `/ceo-ralph:new <name> [goal]` | Create new spec and start research |
+| `/ceo-ralph:research` | Run/re-run research phase |
+| `/ceo-ralph:requirements` | Generate requirements (approves research) |
+| `/ceo-ralph:design` | Generate design (approves requirements) |
+| `/ceo-ralph:tasks` | Generate tasks (approves design) |
+| `/ceo-ralph:implement` | Start execution loop (approves tasks) |
+| `/ceo-ralph:status` | Show all specs and progress |
+| `/ceo-ralph:switch <name>` | Change active spec |
+| `/ceo-ralph:cancel` | Cancel active loop, cleanup state |
+| `/ceo-ralph:remote-ui` | Configure Remote UI approvals |
+| `/ceo-ralph:enableremote` | One-shot Remote UI + HTTPS tunnel |
+| `/ceo-ralph:feedback [message]` | Submit feedback or report an issue |
 | `/ceo-ralph:help` | Show this help |
 
-**Workflow Phases**
-| Command | Description |
-|---------|-------------|
-| `/ceo-ralph:research` | Run research phase |
-| `/ceo-ralph:requirements` | Generate requirements |
-| `/ceo-ralph:design` | Create technical design |
-| `/ceo-ralph:tasks` | Break into executable tasks |
-| `/ceo-ralph:implement` | Execute tasks via Codex |
-
-**Spec Management**
-| Command | Description |
-|---------|-------------|
-| `/ceo-ralph:status` | Show current progress |
-| `/ceo-ralph:switch [name]` | Change active spec |
-| `/ceo-ralph:refactor` | Update specs after implementation |
-
-**Execution Control**
-| Command | Description |
-|---------|-------------|
-| `/ceo-ralph:pause` | Pause execution |
-| `/ceo-ralph:resume` | Resume paused execution |
-| `/ceo-ralph:cancel` | Cancel and cleanup |
-
-**Other**
-| Command | Description |
-|---------|-------------|
-| `/ceo-ralph:feedback` | Submit feedback or issues |
-
-### Quick Mode
-
-Skip approval gates with `--quick`:
-```
-/ceo-ralph:start "my feature" --quick
-```
-
-Quick mode:
-- Auto-approves each phase
-- Runs all phases without stopping
-- Still pauses on errors/escalations
-- Still uses delegation (never implements directly)
-
-### Key Concepts
-
-**Spec**: A feature specification containing research, requirements, design, and tasks.
-Stored in `./specs/{name}/` directory.
-
-**Approval Gates**: Each phase requires user approval before proceeding (unless `--quick`).
-
-**Delegation Principle**: Claude coordinates, Codex implements. Claude never writes code directly.
-
-**Codex Workers**: GPT models that implement code via MCP delegation.
-
-**4-Layer Verification**: Every task verified for:
-1. Contradiction detection
-2. Uncommitted files
-3. Checkmark presence
-4. TASK_COMPLETE signal
-
-**POC-First**: Implementation follows "make it work, then make it right" methodology.
-
-### Task Markers
-
-| Marker | Meaning |
-|--------|---------|
-| `[P]` | Parallel execution |
-| `[VERIFY]` | Quality checkpoint |
-| `[POC]` | Proof of concept first |
-| `[CRITICAL]` | Critical path (5 retries) |
-| `[OPTIONAL]` | Optional (2 retries) |
-
-### Configuration
-
-Environment variables:
-- `CEO_RALPH_MAX_RETRIES` - Max retries per task (default: 3)
-- `CEO_RALPH_PARALLEL_LIMIT` - Max parallel workers (default: 3)
-- `CEO_RALPH_MAX_ITERATIONS` - Max global loop iterations (default: 100)
-
-Codex model configured by `/ceo-ralph:setup` (default: `gpt-5.2-codex`).
-
-### Post-Install Checklist
-
-1. Install Codex CLI: `npm install -g @openai/codex`
-2. Authenticate: `codex login`
-3. Run `/ceo-ralph:setup`
-4. Restart Claude Code
-5. Run `/ceo-ralph:implement` to confirm MCP connectivity
-
-See https://github.com/dutsAI/ceo-ralph for full documentation.
-
-### More Help
+## Workflow
 
 ```
-/ceo-ralph:help [command]  # Detailed help for a command
+/ceo-ralph:new "my-feature"
+    |
+    v
+[Research Phase] - Automatic on new
+    |
+    v (review research.md)
+/ceo-ralph:requirements
+    |
+    v (review requirements.md)
+/ceo-ralph:design
+    |
+    v (review design.md)
+/ceo-ralph:tasks
+    |
+    v (review tasks.md)
+/ceo-ralph:implement
+    |
+    v
+[Task-by-task execution with Codex MCP]
+    |
+    v
+Done!
 ```
+
+## Quick Start
+
+```bash
+# Easiest: use start (auto-detects resume or new)
+/ceo-ralph:start user-auth Add JWT authentication
+
+# Or resume an existing spec
+/ceo-ralph:start
+
+# Manual workflow with individual commands:
+/ceo-ralph:new user-auth Add JWT authentication
+/ceo-ralph:requirements
+/ceo-ralph:design
+/ceo-ralph:tasks
+/ceo-ralph:implement
 ```
 
-## Output (Command-Specific Help)
+## Options
 
-```markdown
-## /ceo-ralph:{command}
+### start command
+```
+/ceo-ralph:start [name] [goal] [--fresh] [--quick] [--commit-spec] [--no-commit-spec]
+```
+- `--fresh`: Force new spec, overwrite if exists (skips "resume or fresh?" prompt)
+- `--quick`: Skip interactive phases, auto-generate all specs, start execution immediately
+- `--commit-spec`: Commit and push spec files after each phase (default: true in normal mode, false in quick mode)
+- `--no-commit-spec`: Explicitly disable committing spec files
 
-{Full content of the command's markdown file}
+The `--commit-spec` setting is stored in `.ralph-state.json` and applies to all subsequent phases (research, requirements, design, tasks).
+
+### new command
+```
+/ceo-ralph:new <name> [goal] [--skip-research]
+```
+- `--skip-research`: Skip research phase, start with requirements
+
+### phase commands (research, requirements, design, tasks)
+```
+/ceo-ralph:<phase> [spec-name]
+```
+Phase commands use the `commitSpec` setting from `.ralph-state.json` (set during `/ceo-ralph:start`).
+
+### implement command
+```
+/ceo-ralph:implement [--max-task-iterations 5]
+```
+- `--max-task-iterations`: Max retries per task before failure (default: 5)
+
+## Directory Structure
+
+Specs are stored in `./specs/`:
+```
+./specs/
+├── .current-spec           # Active spec name
+├── my-feature/
+│   ├── .ralph-state.json   # Loop state (deleted on completion)
+│   ├── .progress.md        # Progress tracking (persists)
+│   ├── research.md         # Research findings
+│   ├── requirements.md     # Requirements
+│   ├── design.md           # Technical design
+│   └── tasks.md            # Implementation tasks
 ```
 
-## Error Handling
+## Execution Loop
 
-| Error | Action |
-|-------|--------|
-| Unknown command | List available commands |
+The implement command runs tasks one at a time with Codex MCP:
+1. Execute task from tasks.md
+2. Verify completion
+3. Commit changes
+4. Update progress
+5. Continue until all tasks done
+
+## Sub-Agents
+
+Each phase uses a specialized agent:
+- **research-analyst**: Research and feasibility analysis
+- **product-manager**: Requirements and user stories
+- **architect-reviewer**: Technical design and architecture
+- **task-planner**: POC-first task breakdown
+- **plan-synthesizer**: Quick mode artifact generation
+
+## POC-First Workflow
+
+Tasks follow a 4-phase structure:
+1. **Phase 1: Make It Work** - POC validation, skip tests
+2. **Phase 2: Refactoring** - Clean up code
+3. **Phase 3: Testing** - Unit, integration, e2e tests
+4. **Phase 4: Quality Gates** - Lint, types, CI
+
+## Troubleshooting
+
+**Spec not found?**
+- Run `/ceo-ralph:status` to see available specs
+- Run `/ceo-ralph:switch <name>` to change active spec
+
+**Task failing repeatedly?**
+- After 5 attempts, loop blocks with error message
+- Fix manually, then run `/ceo-ralph:implement` to resume
+
+**Want to restart?**
+- Run `/ceo-ralph:cancel` to cleanup state
+- Progress file is preserved with completed tasks

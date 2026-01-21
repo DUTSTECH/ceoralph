@@ -1,196 +1,187 @@
 ---
-description: Create new spec, initiate research
-argument-hint: <name> [goal] [--skip-research]
-allowed-tools: [Read, Write, Edit, Bash, Task, AskUserQuestion]
+description: Create new spec and start research phase
+argument-hint: <spec-name> [goal description] [--skip-research]
+allowed-tools: [Bash, Write, Task, AskUserQuestion]
 ---
 
-# /ceo-ralph:new
+# Create New Spec
 
-Create a new specification and launch the research phase.
+You are creating a new specification and starting the research phase.
 
-## Usage
+## Parse Arguments
 
-```
-/ceo-ralph:new <name> [goal]
-/ceo-ralph:new <name> [goal] --skip-research
-```
+From `$ARGUMENTS`, extract:
+- **name**: The spec name (required, must be kebab-case, first argument)
+- **goal**: Everything after the name except flags (optional)
+- **--skip-research**: If present, skip research and start with requirements
 
-## Arguments
+Examples:
+- `/ceo-ralph:new user-auth` -> name="user-auth", goal=none
+- `/ceo-ralph:new user-auth Add OAuth2 login` -> name="user-auth", goal="Add OAuth2 login"
+- `/ceo-ralph:new user-auth --skip-research` -> name="user-auth", goal=none, skip research
 
-- `name` (required): Spec name in kebab-case (e.g., `user-auth`, `dark-mode-toggle`)
-- `goal` (optional): Description of what you want to build. If not provided, will prompt.
-- `--skip-research`: Skip research phase, go directly to requirements
+## Capture Goal
 
-## Examples
+<mandatory>
+The goal MUST be captured before proceeding:
 
-```
-/ceo-ralph:new user-auth "Add JWT-based authentication"
-/ceo-ralph:new dark-mode-toggle
-/ceo-ralph:new payment-flow --skip-research
-```
+1. If goal text was provided in arguments, use it
+2. If NO goal text provided, use AskUserQuestion to ask:
+   "What is the goal for this spec? Describe what you want to build or achieve."
+3. Store the goal verbatim in .progress.md under "Original Goal"
+</mandatory>
 
-## Behavior
+## Validation
 
-### 1. Argument Parsing
+1. Verify spec name is provided
+2. Verify spec name is kebab-case (lowercase, hyphens only)
+3. Check if `./specs/$name/` already exists. If so, ask user if they want to resume or overwrite
 
-Extract from command arguments:
-- Spec name (required, kebab-case)
-- Goal description (optional)
-- `--skip-research` flag
+## Initialize
 
-### 2. Goal Capture
+1. Create directory structure:
+   ```bash
+   mkdir -p ./specs/$name
+   ```
 
-If no goal provided in arguments:
+2. Update active spec tracker:
+   ```bash
+   echo "$name" > ./specs/.current-spec
+   ```
 
-```
-What is the goal for this spec?
-Describe what you want to build or achieve.
-```
+3. Ensure gitignore entries exist for spec state files:
+   ```bash
+   # Add .current-spec and .progress.md to .gitignore if not already present
+   if [ -f .gitignore ]; then
+     grep -q "specs/.current-spec" .gitignore || echo "specs/.current-spec" >> .gitignore
+     grep -q "\*\*/\.progress\.md" .gitignore || echo "**/.progress.md" >> .gitignore
+   else
+     echo "specs/.current-spec" > .gitignore
+     echo "**/.progress.md" >> .gitignore
+   fi
+   ```
 
-Store the response verbatim as the spec goal.
+4. Create `.ralph-state.json` in the spec directory:
+   ```json
+   {
+     "source": "spec",
+     "name": "$name",
+     "basePath": "./specs/$name",
+     "phase": "research",
+     "taskIndex": 0,
+     "totalTasks": 0,
+     "taskIteration": 1,
+     "maxTaskIterations": 5,
+     "globalIteration": 1,
+     "maxGlobalIterations": 100
+   }
+   ```
 
-### 3. Validation
+   If `--skip-research`, set `"phase": "requirements"` instead.
 
-- Confirm spec name is valid kebab-case
-- Check if spec already exists in `./specs/{name}/`
-- If exists: offer to resume or overwrite
+5. Create initial `.progress.md` with the captured goal:
+   ```markdown
+   ---
+   spec: $name
+   phase: research
+   task: 0/0
+   updated: <current timestamp>
+   ---
 
-### 4. Directory Setup
+   # Progress: $name
 
-Create spec directory structure:
+   ## Original Goal
 
-```
-./specs/{name}/
-├── .ceo-ralph-state.json
-├── .progress.md
-└── (other files created by phases)
-```
+   $goal
 
-Update `./specs/.current-spec` with the new spec name.
+   ## Completed Tasks
 
-Add to `.gitignore` if not present:
-```
-specs/*/.ceo-ralph-state.json
-```
+   _No tasks completed yet_
 
-### 5. State Initialization
+   ## Current Task
 
-```json
-{
-  "specName": "{name}",
-  "basePath": "./specs/{name}",
-  "phase": "research",
-  "awaitingApproval": false,
-  "quickMode": false,
-  "currentTask": null,
-  "totalTasks": 0,
-  "completedTasks": 0,
-  "globalIteration": 1,
-  "maxGlobalIterations": 100,
-  "paused": false,
-  "goal": "{original goal}",
-  "usage": {
-    "claude": { "totalTokens": 0 },
-    "codex": { "totalTokens": 0 }
-  },
-  "createdAt": "{ISO timestamp}",
-  "updatedAt": "{ISO timestamp}"
-}
-```
+   Starting research phase
 
-If `--skip-research`, set `phase: "requirements"` instead.
+   ## Learnings
 
-### 6. Progress Documentation
+   _Discoveries and insights will be captured here_
 
-Generate `.progress.md`:
+   ## Blockers
 
-```markdown
-# Spec: {name}
+   - None currently
 
-## Goal
+   ## Next
 
-{original goal}
+   Complete research, then proceed to requirements
+   ```
 
-## Timeline
+## Execute Research Phase
 
-- Created: {timestamp}
+If NOT `--skip-research`:
 
-## Completed Tasks
+<mandatory>
+Use the Task tool with `subagent_type: research-analyst` to run the research phase.
+</mandatory>
 
-(none yet)
+Invoke research-analyst agent with:
+- The user's goal/feature description from the conversation
+- The spec name and path
+- Instructions to output `./specs/$name/research.md`
 
-## Learnings
+The agent will:
+1. Search web for best practices and prior art
+2. Explore codebase for existing patterns
+3. Assess feasibility
+4. Create research.md with findings and recommendations
 
-(none yet)
+After research completes:
 
-## Blockers
+<mandatory>
+**STOP HERE. DO NOT PROCEED TO REQUIREMENTS.**
 
-(none yet)
-```
+(This does not apply in `--quick` mode, which auto-generates all artifacts without stopping.)
 
-### 7. Phase Execution
+After displaying the output, you MUST:
+1. End your response immediately
+2. Wait for the user to review research.md
+3. Only proceed to requirements when user explicitly runs `/ceo-ralph:requirements`
 
-**Standard flow** (no `--skip-research`):
+DO NOT automatically invoke the product-manager or run the requirements phase.
+The user needs time to review research findings before proceeding.
+</mandatory>
 
-Delegate to `research-analyst` agent:
-- Investigate best practices
-- Explore existing codebase patterns
-- Assess feasibility
-- Discover quality commands (lint, test, build)
-- Output findings to `research.md`
+## Execute Requirements Phase (if --skip-research)
 
-**CRITICAL STOP POINT**: After research completes, STOP and wait for user review.
-User must explicitly run `/ceo-ralph:requirements` to proceed.
+If `--skip-research` was specified:
 
-**Skip-research flow** (`--skip-research`):
+<mandatory>
+Use the Task tool with `subagent_type: product-manager` to run the requirements phase.
+</mandatory>
 
-Delegate to `requirements-manager` agent to generate `requirements.md`.
-Then STOP and wait for user approval.
-
-## Coordinator Principle
-
-**YOU ARE A COORDINATOR, NOT AN IMPLEMENTER.**
-
-Never write spec content yourself. Always delegate to appropriate agents:
-- Research → `research-analyst`
-- Requirements → `requirements-manager`
-- Design → `design-architect`
-- Tasks → `task-planner`
-- Execution → delegate to Codex via MCP
+Invoke product-manager agent with:
+- The user's goal/feature description
+- The spec name and path
+- Instructions to output `./specs/$name/requirements.md`
 
 ## Output
 
-```markdown
-## CEO Ralph: New Spec Created
+After completion, inform the user:
 
-**Name**: {specName}
-**Goal**: {goal}
+```
+Spec '$name' created at ./specs/$name/
 
-Spec directory created at `./specs/{name}/`
+Current phase: research (or requirements if skipped)
 
-{If standard mode}
-Starting research phase...
-
-{After research completes}
-Research complete. Review `./specs/{name}/research.md`
-
-To approve and continue: `/ceo-ralph:requirements`
-To revise research: Provide feedback and run `/ceo-ralph:research`
-
-{If skip-research mode}
-Skipping research, starting requirements phase...
-
-{After requirements complete}
-Requirements complete. Review `./specs/{name}/requirements.md`
-
-To approve and continue: `/ceo-ralph:design`
+Next steps:
+- Review the generated research.md (or requirements.md)
+- Run /ceo-ralph:requirements to proceed (or /ceo-ralph:design if skipped research)
 ```
 
-## Error Handling
+<mandatory>
+**STOP AFTER DISPLAYING OUTPUT.**
 
-| Error | Action |
-|-------|--------|
-| Invalid spec name | Ask for valid kebab-case name |
-| Spec exists | Offer resume or overwrite options |
-| Empty goal | Prompt for goal description |
-| Agent failure | Report error, allow retry |
+(This does not apply in `--quick` mode, which auto-generates all artifacts without stopping.)
+
+Do NOT proceed to the next phase automatically.
+Wait for explicit user command to continue.
+</mandatory>

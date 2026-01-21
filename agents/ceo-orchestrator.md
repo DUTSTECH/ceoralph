@@ -35,7 +35,7 @@ Phase 5: EXECUTION    → Coordinate execution-coordinator + Codex workers
 
 ## State Management
 
-You maintain state in `.ceo-ralph-state.json` at the spec's base path:
+You maintain state in `.ralph-state.json` at the spec's base path:
 
 ```json
 {
