@@ -73,6 +73,18 @@ Update the plugin to v1.0.3 or newer and restart Claude Code. This version norma
 
 ---
 
+### "session_id:...: command not found" on stop hook
+
+If you see:
+
+```
+Stop hook error: Failed with non-blocking status code: -bash: line 1: session_id:...: command not found
+```
+
+Update the plugin to v1.0.4 or newer and restart Claude Code. This version runs the stop hook command in a way that prevents Bash from executing hook stdin.
+
+---
+
 ## Execution Issues
 
 ### Task keeps failing / Max iterations reached
