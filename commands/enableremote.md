@@ -64,8 +64,52 @@ If still missing, stop and ask the user to install manually.
 
 ## Step 2: Enable Remote UI
 
-If `cloudflared` is installed, run:
+If `cloudflared` is installed, resolve the Remote UI script path and run it:
 
 ```bash
-python "$CLAUDE_PLUGIN_ROOT/remote-ui/remote_ui.py" enable
+SCRIPT=""
+if [ -n "$CLAUDE_PLUGIN_ROOT" ] && [ -f "$CLAUDE_PLUGIN_ROOT/remote-ui/remote_ui.py" ]; then
+  SCRIPT="$CLAUDE_PLUGIN_ROOT/remote-ui/remote_ui.py"
+elif [ -n "$CLAUDE_PLUGIN_DIR" ] && [ -f "$CLAUDE_PLUGIN_DIR/remote-ui/remote_ui.py" ]; then
+  SCRIPT="$CLAUDE_PLUGIN_DIR/remote-ui/remote_ui.py"
+else
+  BASE="${USERPROFILE:-$HOME}"
+  BASE="${BASE//\\//}"
+  if printf '%s' "$BASE" | grep -Eq '^[A-Za-z]:/'; then
+    DRIVE=$(printf '%s' "$BASE" | cut -c1 | tr 'A-Z' 'a-z')
+    BASE="/$DRIVE/${BASE:3}"
+  fi
+  for CANDIDATE in \
+    "$BASE/.claude/plugins/cache/dutstech-ceoralph"/ceo-ralph/*/remote-ui/remote_ui.py \
+    "$BASE/.claude/plugins/marketplaces/dutstech-ceoralph/remote-ui/remote_ui.py" \
+    "$BASE/.claude/plugins/dutstech-ceoralph/remote-ui/remote_ui.py"; do
+    if [ -f "$CANDIDATE" ]; then
+      SCRIPT="$CANDIDATE"
+      break
+    fi
+  done
+fi
+if [ -z "$SCRIPT" ]; then
+  echo "REMOTE_UI_SCRIPT_NOT_FOUND"
+  exit 1
+fi
+python "$SCRIPT" enable
+```
+
+## Step 3: Verify Configuration
+
+Confirm a public URL was saved to config:
+
+```bash
+python - <<'PY'
+import json, os
+base = os.environ.get("USERPROFILE") or os.path.expanduser("~")
+config = os.path.join(base, ".ceo-ralph", "remote-ui", "config.json")
+try:
+    with open(config, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    print("publicUrl:", data.get("publicUrl", "MISSING"))
+except FileNotFoundError:
+    print("config_missing")
+PY
 ```
