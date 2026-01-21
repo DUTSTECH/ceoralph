@@ -5,7 +5,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -lc \"SCRIPT=\\\"$CLAUDE_PLUGIN_ROOT/hooks/scripts/stop-watcher.sh\\\"; SCRIPT=\\${SCRIPT//\\\\\\\\/\\\\/}; if printf '%s' \\\"$SCRIPT\\\" | grep -Eq '^[A-Za-z]:/'; then DRIVE=$(printf '%s' \\\"$SCRIPT\\\" | cut -c1 | tr 'A-Z' 'a-z'); SCRIPT=\\\"/$DRIVE/\\${SCRIPT:3}\\\"; fi; if [ -f \\\"$SCRIPT\\\" ]; then \\\"$SCRIPT\\\"; else echo \\\"CEO Ralph cleanup: stop hook script not found\\\"; fi\""
+            "command": "bash",
+            "args": [
+              "-lc",
+              "$CLAUDE_PLUGIN_ROOT/hooks/scripts/stop-runner.sh"
+            ]
           }
         ]
       }
