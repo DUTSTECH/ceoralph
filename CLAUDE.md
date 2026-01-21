@@ -48,6 +48,7 @@ ceoralph/
 1. **Spec Phases**: Each command (`/ceo-ralph:research`, `:requirements`, `:design`, `:tasks`) invokes a specialized agent to generate corresponding markdown in `./specs/<spec-name>/`
 2. **Codex MCP**: During execution (`/ceo-ralph:implement`), the command invokes `mcp__codex__codex` for each task. The coordinator reads `.ralph-state.json`, delegates tasks to Codex, and outputs `ALL_TASKS_COMPLETE` when done.
 3. **Fresh Context**: Each task runs in isolation via Codex MCP. Progress persists in `.progress.md` and task checkmarks in `tasks.md`
+4. **Verification**: [VERIFY] tasks are reviewed by qa-engineer, with commands executed via Codex MCP.
 
 ### State Files
 

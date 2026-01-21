@@ -277,6 +277,8 @@ For each task:
 | 5m ago | 1.1 | ✓ Completed |
 ```
 
+Verification tasks run commands via Codex MCP, while Claude (QA) interprets results and decides pass/fail.
+
 ### Completion
 
 ```markdown
