@@ -36,7 +36,6 @@ fi
 # Validate state file is readable JSON
 CORRUPT_STATE=false
 if ! jq empty "$STATE_FILE" 2>/dev/null; then
-    echo "WARNING: Corrupt .ralph-state.json detected for spec: $SPEC_NAME" >&2
     CORRUPT_STATE=true
 fi
 
@@ -47,16 +46,16 @@ if [ "$CORRUPT_STATE" = false ]; then
     TOTAL_TASKS=$(jq -r '.totalTasks // 0' "$STATE_FILE" 2>/dev/null || echo "0")
     TASK_ITERATION=$(jq -r '.taskIteration // 1' "$STATE_FILE" 2>/dev/null || echo "1")
 
-    # Log current state before cleanup
+    # Log current state before cleanup (stdout only)
     if [ "$PHASE" = "execution" ]; then
-        echo "[ceo-ralph] Cleaning up spec: $SPEC_NAME | Task: $((TASK_INDEX + 1))/$TOTAL_TASKS | Attempt: $TASK_ITERATION" >&2
+        echo "CEO Ralph cleanup: $SPEC_NAME | Task $((TASK_INDEX + 1))/$TOTAL_TASKS | Attempt $TASK_ITERATION"
     fi
 fi
 
 # Cleanup: Remove state file to reset execution state
 # This prevents the loop from resuming on next start
 rm -f "$STATE_FILE" 2>/dev/null || true
-echo "[ceo-ralph] Removed .ralph-state.json for spec: $SPEC_NAME" >&2
+echo "CEO Ralph cleanup complete: state cleared for $SPEC_NAME"
 
 # Cleanup orphaned temp progress files (from interrupted parallel batches)
 find "$CWD/specs/$SPEC_NAME" -name ".progress-task-*.md" -mmin +60 -delete 2>/dev/null || true

@@ -1,7 +1,7 @@
 {
   "name": "ceo-ralph",
   "description": "Claude Opus 4.5 as CEO orchestrator with GPT Codex workers for spec-driven autonomous development",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "author": {
     "name": "DUTSTECH",
     "url": "https://github.com/DUTSTECH"

@@ -9,15 +9,13 @@ Configure Codex (GPT) for CEO Ralph via Codex CLI MCP.
 
 ## Step 1: Check Codex CLI
 
-**On Windows (PowerShell):**
-```powershell
-Get-Command codex -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source; codex --version 2>&1 | Select-Object -First 1
+Run:
+```bash
+if command -v codex >/dev/null 2>&1; then codex --version 2>&1 | head -1; else echo "CODEX_MISSING"; fi
 ```
 
-**On macOS/Linux:**
-```bash
-which codex 2>/dev/null && codex --version 2>&1 | head -1 || echo "CODEX_MISSING"
-```
+If you're using PowerShell without Bash, run:
+`Get-Command codex -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source; codex --version 2>&1 | Select-Object -First 1`
 
 If missing, tell the user:
 

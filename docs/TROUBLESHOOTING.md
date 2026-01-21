@@ -57,6 +57,20 @@ This error occurs when you have an old plugin installation (v1.x) that reference
    }
    ```
 
+If the error references `smart-ralph/ralph-specum`, uninstall that plugin or remove its cached folder in `~/.claude/plugins/cache/` to stop the extra hook from running.
+
+---
+
+### "stop-watcher.sh: No such file or directory" (Windows paths)
+
+If you see:
+
+```
+Stop hook error: Failed with non-blocking status code: /bin/bash: C:\Users\...\hooks\scripts\stop-watcher.sh: No such file or directory
+```
+
+Update the plugin to v1.0.3 or newer and restart Claude Code. This version normalizes Windows paths so Git Bash can locate the script.
+
 ---
 
 ## Execution Issues
