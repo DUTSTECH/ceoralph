@@ -50,6 +50,16 @@ Resolve the user profile path first (do not guess usernames):
 - **Windows (cmd.exe)**: `%USERPROFILE%`
 - **Windows (Git Bash)**: `powershell -NoProfile -Command "$env:USERPROFILE"` or `cmd.exe /c echo %USERPROFILE%`
 
+If you're running inside Bash, use:
+```bash
+echo "$USERPROFILE"
+```
+
+If you need to call PowerShell from Bash, escape the `$`:
+```bash
+powershell -NoProfile -Command "\$env:USERPROFILE"
+```
+
 Then read the settings file:
 - **Windows**: `<USERPROFILE>\.claude\settings.json`
 - **macOS/Linux**: `~/.claude/settings.json`
