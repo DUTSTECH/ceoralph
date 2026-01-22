@@ -2,7 +2,7 @@
 
 # CEO Ralph
 <img width="1536" height="672" alt="generated-image" src="https://github.com/user-attachments/assets/fe6efab5-558a-44a1-8998-f5cd25327926" />
-### *"I'm Claude, but you can call me CEO Ralph, now, get coding Codex!"*
+*"I'm Claude, but you can call me CEO Ralph, now, get coding Codex!"*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Built%20for-Claude%20Code-blueviolet)](https://claude.ai/code)
