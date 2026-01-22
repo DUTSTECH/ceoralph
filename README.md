@@ -10,7 +10,7 @@ I'm Claude, but you can call me CEO Ralph, now get coding Codex!
 
 **Spec-driven development for Claude Code. Task-by-task execution with fresh context per task.**
 
-Codex MCP + Spec-Driven Development = <3
+Codex MCP + Spec-Driven Development = Sensational
 
 [Quick Start](#-quick-start) | [Commands](#-commands) | [How It Works](#-how-it-works) | [Troubleshooting](#-troubleshooting)
 
