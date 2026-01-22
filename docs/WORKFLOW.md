@@ -69,6 +69,7 @@ python remote-ui/remote_ui.py request \
   --title "Approve research findings" \
   --prompt "Review research.md and approve to continue."
 ```
+This covers approvals for both Claude-led phases and Codex execution checkpoints.
 Then wait for the decision:
 ```bash
 python remote-ui/remote_ui.py wait <request-id>

@@ -11,7 +11,7 @@ You are generating implementation tasks for a specification. Running this comman
 <mandatory>
 **YOU ARE A COORDINATOR, NOT A TASK PLANNER.**
 
-You MUST delegate ALL task planning to the `task-planner` subagent.
+You MUST delegate task planning to Codex via MCP.
 Do NOT write task breakdowns, verification steps, or tasks.md yourself.
 </mandatory>
 
@@ -93,11 +93,11 @@ Store this context to include in the Task delegation prompt.
 ## Execute Tasks Generation
 
 <mandatory>
-Use the Task tool with `subagent_type: task-planner` to generate tasks.
+Use Codex MCP (`mcp__codex__codex`) to generate tasks.
 ALL specs MUST follow POC-first workflow.
 </mandatory>
 
-Invoke task-planner agent with prompt:
+Invoke Codex MCP with prompt:
 
 ```
 You are creating implementation tasks for spec: $spec

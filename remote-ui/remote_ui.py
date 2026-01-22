@@ -230,6 +230,8 @@ def json_response(handler, payload, status=HTTPStatus.OK):
     handler.send_header("X-Content-Type-Options", "nosniff")
     handler.send_header("X-Frame-Options", "DENY")
     handler.send_header("Referrer-Policy", "no-referrer")
+    if hasattr(handler, "_is_https") and handler._is_https():
+        handler.send_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
     handler.end_headers()
     handler.wfile.write(data)
 
@@ -244,6 +246,8 @@ def html_response(handler, body, status=HTTPStatus.OK):
     handler.send_header("X-Content-Type-Options", "nosniff")
     handler.send_header("X-Frame-Options", "DENY")
     handler.send_header("Referrer-Policy", "no-referrer")
+    if hasattr(handler, "_is_https") and handler._is_https():
+        handler.send_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
     handler.end_headers()
     handler.wfile.write(data)
 

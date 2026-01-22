@@ -202,7 +202,7 @@ The architect-reviewer will regenerate the design based on current requirements.
 
 ### Tasks don't follow POC-first pattern
 
-The task-planner should generate tasks in 4 phases:
+Codex (via MCP) should generate tasks in 4 phases:
 1. Make It Work (POC)
 2. Refactoring
 3. Testing

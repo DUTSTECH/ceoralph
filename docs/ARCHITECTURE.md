@@ -61,7 +61,7 @@ The CEO layer is responsible for all high-level decision making:
 | **research-analyst** | External/internal research, feasibility assessment |
 | **requirements-manager** | User stories, acceptance criteria |
 | **design-architect** | Technical design, architecture decisions |
-| **task-planner** | POC-first task breakdown |
+| **task planning (Codex MCP)** | POC-first task breakdown |
 
 #### Execution Agents
 

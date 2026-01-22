@@ -6,7 +6,7 @@ allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 
 # /ceo-ralph:remote-ui
 
-Configure and start the Remote UI approval dashboard.
+Configure and start the Remote UI approval dashboard (for both Claude orchestration approvals and Codex execution approvals).
 
 ## Usage
 
