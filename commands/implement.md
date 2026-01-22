@@ -88,6 +88,7 @@ If Codex MCP returns `AbortError`:
 - Re-run the task once with reduced context (only Files list + task block + .progress.md)
 - Log the failure in `.progress.md` and `codex-log.md`
 - If it fails again, stop and ask the user
+If the user manually stops execution, treat it as a cancel and stop cleanly (no retries).
 
 ## Completion
 
@@ -104,3 +105,4 @@ ALL_TASKS_COMPLETE
 - [VERIFY] tasks should be delegated to qa-engineer (as in spec-executor rules).
 - Avoid polling or tailing live task output. Rely on updated files (`tasks.md`, `.progress.md`, `codex-log.md`) to reduce terminal flicker.
 - Avoid spinners or overwriting lines; print plain, newline-delimited status to keep terminal readable.
+- Do not open or tail temporary task output files; they cause prompt flicker in some terminals.
