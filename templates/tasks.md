@@ -1,5 +1,9 @@
 # Tasks: {{FEATURE_NAME}}
 
+## Design Summary
+
+{{SHORT_DESIGN_SUMMARY}}
+
 ## Overview
 
 Total tasks: {{N}}

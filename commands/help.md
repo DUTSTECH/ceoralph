@@ -10,7 +10,7 @@ Show help for CEO Ralph commands and workflow.
 
 ## Overview
 
-CEO Ralph is a spec-driven development plugin that guides you through research, requirements, design, and task generation phases, then executes tasks autonomously with Codex MCP.
+CEO Ralph is a spec-driven development plugin that guides you through discovery and planning phases, then executes tasks autonomously with Codex MCP.
 
 ## Commands
 
@@ -18,11 +18,9 @@ CEO Ralph is a spec-driven development plugin that guides you through research, 
 |---------|-------------|
 | `/ceo-ralph:start [name] [goal]` | Smart entry point: resume or create new |
 | `/ceo-ralph:start [goal] --quick` | Quick mode: auto-generate all specs and execute |
-| `/ceo-ralph:new <name> [goal]` | Create new spec and start research |
-| `/ceo-ralph:research` | Run/re-run research phase |
-| `/ceo-ralph:requirements` | Generate requirements (approves research) |
-| `/ceo-ralph:design` | Generate design (approves requirements) |
-| `/ceo-ralph:tasks` | Generate tasks (approves design) |
+| `/ceo-ralph:new <name> [goal]` | Create new spec and start discovery |
+| `/ceo-ralph:discovery` | Run merged discovery (research + requirements) |
+| `/ceo-ralph:plan` | Run merged plan (design summary + tasks) |
 | `/ceo-ralph:implement` | Start execution loop (approves tasks) |
 | `/ceo-ralph:status` | Show all specs and progress |
 | `/ceo-ralph:switch <name>` | Change active spec |
@@ -38,16 +36,10 @@ CEO Ralph is a spec-driven development plugin that guides you through research, 
 /ceo-ralph:new "my-feature"
     |
     v
-[Research Phase] - Automatic on new
+/ceo-ralph:discovery
     |
-    v (review research.md)
-/ceo-ralph:requirements
-    |
-    v (review requirements.md)
-/ceo-ralph:design
-    |
-    v (review design.md)
-/ceo-ralph:tasks
+    v (review discovery.md)
+/ceo-ralph:plan
     |
     v (review tasks.md)
 /ceo-ralph:implement
@@ -70,9 +62,8 @@ Done!
 
 # Manual workflow with individual commands:
 /ceo-ralph:new user-auth Add JWT authentication
-/ceo-ralph:requirements
-/ceo-ralph:design
-/ceo-ralph:tasks
+/ceo-ralph:discovery
+/ceo-ralph:plan
 /ceo-ralph:implement
 ```
 
@@ -80,22 +71,23 @@ Done!
 
 ### start command
 ```
-/ceo-ralph:start [name] [goal] [--fresh] [--quick] [--commit-spec] [--no-commit-spec]
+/ceo-ralph:start [name] [goal] [--fresh] [--quick] [--lite] [--commit-spec] [--no-commit-spec]
 ```
 - `--fresh`: Force new spec, overwrite if exists (skips "resume or fresh?" prompt)
 - `--quick`: Skip interactive phases, auto-generate all specs, start execution immediately
+- `--lite`: Use lite planning (short plan + tasks only)
 - `--commit-spec`: Commit and push spec files after each phase (default: true in normal mode, false in quick mode)
 - `--no-commit-spec`: Explicitly disable committing spec files
 
-The `--commit-spec` setting is stored in `.ralph-state.json` and applies to all subsequent phases (research, requirements, design, tasks).
+The `--commit-spec` setting is stored in `.ralph-state.json` and applies to all subsequent phases (discovery, plan, tasks).
 
 ### new command
 ```
-/ceo-ralph:new <name> [goal] [--skip-research]
+/ceo-ralph:new <name> [goal] [--lite]
 ```
-- `--skip-research`: Skip research phase, start with requirements
+- `--lite`: Skip discovery and jump to a short plan + tasks
 
-### phase commands (research, requirements, design, tasks)
+### phase commands (discovery, plan)
 ```
 /ceo-ralph:<phase> [spec-name]
 ```
@@ -116,10 +108,8 @@ Specs are stored in `./specs/`:
 ├── my-feature/
 │   ├── .ralph-state.json   # Loop state (deleted on completion)
 │   ├── .progress.md        # Progress tracking (persists)
-│   ├── research.md         # Research findings
-│   ├── requirements.md     # Requirements
-│   ├── design.md           # Technical design
-│   └── tasks.md            # Implementation tasks
+│   ├── discovery.md        # Research + requirements
+│   └── tasks.md            # Design summary + implementation tasks
 ```
 
 ## Execution Loop
@@ -134,9 +124,9 @@ The implement command runs tasks one at a time with Codex MCP:
 ## Sub-Agents
 
 Each phase uses a specialized agent:
-- **research-analyst**: Research and feasibility analysis
-- **product-manager**: Requirements and user stories
-- **architect-reviewer**: Technical design and architecture
+- **research-analyst**: External research
+- **product-manager**: Requirements synthesis for discovery.md
+- **architect-reviewer**: Design summary for planning
 - **task-planner**: POC-first task breakdown
 - **plan-synthesizer**: Quick mode artifact generation
 

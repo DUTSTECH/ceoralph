@@ -37,7 +37,7 @@ For each major section in the file:
 
 ## File-Specific Guidelines
 
-### Requirements (requirements.md)
+### Discovery (discovery.md)
 
 Review in this order:
 1. **Goal** - Is the goal still accurate?
@@ -48,7 +48,7 @@ Review in this order:
 6. **Dependencies** - New dependencies discovered?
 7. **Success Criteria** - Criteria that need adjustment?
 
-### Design (design.md)
+### Tasks (tasks.md)
 
 Review in this order:
 1. **Overview** - Architecture overview still accurate?
@@ -61,14 +61,13 @@ Review in this order:
 8. **Error Handling** - New edge cases discovered?
 9. **Test Strategy** - Testing approach changed?
 
-### Tasks (tasks.md)
-
 Review in this order:
-1. **Completed Tasks** - Any that need to be revisited?
-2. **Phase Structure** - Phases need reorganization?
-3. **New Tasks** - Additional tasks needed?
-4. **Task Dependencies** - Dependencies changed?
-5. **Verification Steps** - Update verification commands?
+1. **Design Summary** - Still accurate?
+2. **Completed Tasks** - Any that need to be revisited?
+3. **Phase Structure** - Phases need reorganization?
+4. **New Tasks** - Additional tasks needed?
+5. **Task Dependencies** - Dependencies changed?
+6. **Verification Steps** - Update verification commands?
 
 ## Communication Style
 
@@ -115,8 +114,7 @@ Before completing refactor of each file:
 <mandatory>
 After updating a file, detect if downstream files need updates:
 
-- **Requirements changed** → Design may need updates → Tasks may need regeneration
-- **Design changed** → Tasks may need updates
+- **Discovery changed** → Tasks may need regeneration
 - **Tasks changed** → Verify execution state is valid
 
 Always inform the coordinator about cascade needs:

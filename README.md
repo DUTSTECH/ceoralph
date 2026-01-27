@@ -24,7 +24,7 @@ CEO Ralph is a Claude Code plugin that turns your vague feature ideas into struc
 
 ```text
 You: "Add user authentication"
-Ralph: *creates research.md, requirements.md, design.md, tasks.md*
+Ralph: *creates discovery.md, tasks.md*
 Ralph: *executes each task with fresh context*
 Ralph: "I'm helping!"
 ```
@@ -97,9 +97,8 @@ claude --plugin-dir $(pwd)
 
 # The step-by-step way
 /ceo-ralph:new user-auth Add JWT authentication
-/ceo-ralph:requirements
-/ceo-ralph:design
-/ceo-ralph:tasks
+/ceo-ralph:discovery
+/ceo-ralph:plan
 /ceo-ralph:implement
 ```
 
@@ -111,11 +110,9 @@ claude --plugin-dir $(pwd)
 |---------|--------------|
 | `/ceo-ralph:start [name] [goal]` | Smart entry: resume existing or create new |
 | `/ceo-ralph:start [goal] --quick` | Quick mode: auto-generate all specs and execute |
-| `/ceo-ralph:new <name> [goal]` | Create new spec, start research |
-| `/ceo-ralph:research` | Run/re-run research phase |
-| `/ceo-ralph:requirements` | Generate requirements from research |
-| `/ceo-ralph:design` | Generate technical design |
-| `/ceo-ralph:tasks` | Break design into executable tasks |
+| `/ceo-ralph:new <name> [goal]` | Create new spec, start discovery |
+| `/ceo-ralph:discovery` | Run merged discovery (research + requirements) |
+| `/ceo-ralph:plan` | Generate design summary + tasks |
 | `/ceo-ralph:implement` | Execute tasks one-by-one |
 | `/ceo-ralph:status` | Show all specs and progress |
 | `/ceo-ralph:switch <name>` | Change active spec |
@@ -131,22 +128,12 @@ claude --plugin-dir $(pwd)
                |
                v
     +---------------------+
-    |      Research       |  <- Analyzes codebase, searches web
+    |     Discovery       |  <- Research + requirements
     +---------------------+
                |
                v
     +---------------------+
-    |    Requirements     |  <- User stories, acceptance criteria
-    +---------------------+
-               |
-               v
-    +---------------------+
-    |       Design        |  <- Architecture, patterns, decisions
-    +---------------------+
-               |
-               v
-    +---------------------+
-    |       Tasks         |  <- POC-first task breakdown
+    |       Plan          |  <- Design summary + tasks
     +---------------------+
                |
                v
@@ -164,10 +151,8 @@ Each phase uses a specialized sub-agent:
 
 | Phase | Agent | Superpower |
 |-------|-------|------------|
-| Research | `research-analyst` | Web search, codebase analysis, feasibility checks |
-| Requirements | `product-manager` | User stories, acceptance criteria, business value |
-| Design | `architect-reviewer` | Architecture patterns, technical trade-offs |
-| Tasks | `task-planner` | POC-first breakdown, task sequencing |
+| Discovery | `research-analyst` + `product-manager` | Research + requirements synthesis |
+| Plan | `architect-reviewer` + `task-planner` | Design summary + task breakdown |
 | Execution | `spec-executor` | Autonomous implementation, quality gates |
 
 ### Task Execution Workflow
@@ -182,7 +167,7 @@ Tasks follow a 4-phase structure:
 ### Lightweight Governance
 
 CEO Ralph uses a simple Principles + References model:
-- Define non-negotiable Principles (P-1, P-2...) in `requirements.md`
+- Define non-negotiable Principles (P-1, P-2...) in `discovery.md`
 - Every task references relevant Principles alongside FR/AC and design
 
 ---
@@ -210,9 +195,7 @@ Specs live in `./specs/` in your project:
 └── my-feature/
     ├── .ralph-state.json   # Loop state (deleted on completion)
     ├── .progress.md        # Progress tracking
-    ├── research.md
-    ├── requirements.md
-    ├── design.md
+    ├── discovery.md
     └── tasks.md
 ```
 

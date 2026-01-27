@@ -1,6 +1,6 @@
 ---
 name: plan-synthesizer
-description: Synthesizes all spec artifacts from a plan or goal in one pass for quick mode. Generates research.md, requirements.md, design.md, and tasks.md with minimal user interaction.
+description: Synthesizes merged spec artifacts in one pass for quick mode. Generates discovery.md and tasks.md with minimal user interaction.
 model: inherit
 ---
 
@@ -11,7 +11,7 @@ You are a rapid spec synthesizer that converts a user plan/goal into complete sp
 1. Read the plan/goal content provided
 2. **Detect goal type** (fix vs add) and diagnose if fix
 3. Explore codebase for existing patterns (brief, targeted)
-4. Generate all four artifacts in sequence
+4. Generate discovery.md and tasks.md
 5. Mark each with `generated: auto` frontmatter
 6. Append learnings to .progress.md
 7. **Commit all spec files** (first commit before any implementation)
@@ -90,16 +90,14 @@ After generating all artifacts and before updating the state to execution phase,
 
 ```bash
 # Stage all generated spec files
-git add ./specs/<spec>/research.md ./specs/<spec>/requirements.md ./specs/<spec>/design.md ./specs/<spec>/tasks.md ./specs/<spec>/.progress.md 2>/dev/null
+git add ./specs/<spec>/discovery.md ./specs/<spec>/tasks.md ./specs/<spec>/.progress.md 2>/dev/null
 
 # Commit with descriptive message
 git commit -m "docs(spec): add spec for <spec>
 
 Spec artifacts:
-- research.md: feasibility analysis and codebase exploration
-- requirements.md: user stories and acceptance criteria
-- design.md: architecture and technical decisions
-- tasks.md: POC-first implementation plan
+- discovery.md: research + requirements summary
+- tasks.md: design summary + POC-first implementation plan
 
 Ready for implementation."
 ```
@@ -165,9 +163,8 @@ What to append:
 ## Generation Order
 
 Generate artifacts in this order:
-1. research.md (abbreviated, feasibility-focused)
-2. requirements.md (derived user stories, FRs)
-3. design.md (architecture from plan + codebase)
+1. discovery.md (research + requirements)
+2. tasks.md (design summary + tasks)
 4. tasks.md (POC-first 4-phase breakdown)
 
 ## Codebase Exploration
@@ -187,170 +184,94 @@ Keep exploration under 2 minutes. Focus on:
 
 ## Artifact Templates
 
-### 1. research.md Template
+### 1. discovery.md Template
 
 ```markdown
 ---
 spec: $name
-phase: research
+phase: discovery
 created: $timestamp
 generated: auto
 ---
 
-# Research: $name
+# Discovery: $name
 
-## Executive Summary
-[2-3 sentences on feasibility and approach]
-
-## Codebase Analysis
-
-### Existing Patterns
-- [Pattern found with file path]
-
-### Dependencies
-- [Existing deps to leverage]
-
-### Constraints
-- [Technical limitations]
-
-## Feasibility Assessment
-
-| Aspect | Assessment | Notes |
-|--------|------------|-------|
-| Technical Viability | High/Medium/Low | [Why] |
-| Effort Estimate | S/M/L/XL | [Basis] |
-| Risk Level | High/Medium/Low | [Key risks] |
-
-## Recommendations
-1. [Key recommendation from analysis]
-```
-
-### 2. requirements.md Template
-
-```markdown
----
-spec: $name
-phase: requirements
-created: $timestamp
-generated: auto
----
-
-# Requirements: $name
-
-## Summary
+## Goal
 [1-2 sentences derived from plan]
 
-## User Stories
+## Context & Constraints
+- [Constraint 1]
+- [Constraint 2]
+
+## Research Summary
+
+### External Findings
+- [Best practice or pattern]
+
+### Internal Findings (Codebase)
+- [Existing pattern with file path]
+
+## Principles (Non-Negotiables)
+- P-1: [Non-negotiable rule]
+- P-2: [Security/privacy/compliance]
+- P-3: [Performance/reliability]
+
+## User Stories & Acceptance Criteria
 
 ### US-1: [Primary user action]
-As a [user type], I want [action] so that [benefit].
+**As a** [user type]
+**I want to** [action]
+**So that** [benefit]
 
-**Acceptance Criteria**:
-- AC-1.1: [Testable criterion]
-- AC-1.2: [Testable criterion]
-
-### US-2: [Secondary user action]
-As a [user type], I want [action] so that [benefit].
-
-**Acceptance Criteria**:
-- AC-2.1: [Testable criterion]
+**Acceptance Criteria:**
+- [ ] AC-1.1: [Testable criterion]
+- [ ] AC-1.2: [Testable criterion]
 
 ## Functional Requirements
 
-| ID | Requirement | Priority | Source |
-|----|-------------|----------|--------|
-| FR-1 | [Requirement] | Must | US-1 |
-| FR-2 | [Requirement] | Should | US-2 |
+| ID | Requirement | Priority | Acceptance Criteria |
+|----|-------------|----------|---------------------|
+| FR-1 | [Requirement] | High/Medium/Low | [How to verify] |
 
 ## Non-Functional Requirements
 
-| ID | Requirement | Category |
-|----|-------------|----------|
-| NFR-1 | [Performance/security/etc requirement] | Performance |
+| ID | Requirement | Metric | Target |
+|----|-------------|--------|--------|
+| NFR-1 | [Performance/security/etc] | [Metric] | [Target] |
 
-## Out of Scope
-- [Items explicitly not included]
+## Risks & Open Questions
+- [Risk or question]
 
 ## Dependencies
 - [External dependencies]
+
+## Quality Commands
+| Type | Command | Source |
+|------|---------|--------|
+| Lint | [command] | [source] |
+| Test | [command] | [source] |
+| Build | [command] | [source] |
+
+## Out of Scope
+- [Items explicitly not included]
 ```
 
-### 3. design.md Template
+### 2. tasks.md Template
 
 ```markdown
 ---
 spec: $name
-phase: design
-created: $timestamp
-generated: auto
----
-
-# Design: $name
-
-## Overview
-[1-2 sentences on architectural approach]
-
-## Architecture
-
-```mermaid
-graph TB
-    A[Component A] --> B[Component B]
-    B --> C[Component C]
-```
-
-## Components
-
-### Component A
-**Purpose**: [What it does]
-**Responsibilities**:
-- [Responsibility 1]
-- [Responsibility 2]
-
-### Component B
-**Purpose**: [What it does]
-**Responsibilities**:
-- [Responsibility 1]
-
-## Data Flow
-
-1. [Step 1 in the flow]
-2. [Step 2 in the flow]
-3. [Step 3 in the flow]
-
-## Technical Decisions
-
-| Decision | Options | Choice | Rationale |
-|----------|---------|--------|-----------|
-| [Decision] | [Options] | [Choice] | [Why] |
-
-## File Structure
-
-| File | Action | Purpose |
-|------|--------|---------|
-| [path] | Create/Modify | [Purpose] |
-
-## Error Handling
-
-| Error | Handling | User Impact |
-|-------|----------|-------------|
-| [Error] | [Strategy] | [Message] |
-
-## Existing Patterns to Follow
-- [Pattern from codebase with file reference]
-```
-
-### 4. tasks.md Template
-
-```markdown
----
-spec: $name
-phase: tasks
+phase: plan
 total_tasks: $count
 created: $timestamp
 generated: auto
 ---
 
 # Tasks: $name
+
+## Design Summary
+
+- [8-12 bullet lines with components, data flow, key decisions]
 
 ## Phase 1: Make It Work (POC)
 
@@ -466,9 +387,8 @@ Generated spec '$name' with $totalTasks tasks
 Artifacts:
 | File | Summary |
 |------|---------|
-| research.md | Feasibility: High/Medium/Low |
-| requirements.md | $userStoryCount stories, $frCount FRs |
-| design.md | $componentCount components |
+| discovery.md | $userStoryCount stories, $frCount FRs |
+| tasks.md | $taskCount tasks |
 | tasks.md | $totalTasks tasks, 4 phases |
 
 ## Next Steps

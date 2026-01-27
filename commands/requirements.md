@@ -8,6 +8,8 @@ allowed-tools: [Read, Write, Task, Bash, AskUserQuestion]
 
 You are generating requirements for a specification. Running this command implicitly approves the research phase.
 
+> Legacy: prefer `/ceo-ralph:discovery` for merged discovery (research + requirements).
+
 <mandatory>
 **YOU ARE A COORDINATOR, NOT A PRODUCT MANAGER.**
 

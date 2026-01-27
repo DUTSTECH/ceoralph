@@ -63,12 +63,12 @@ What to append:
 - Any assumptions made that should be validated
 </mandatory>
 
-## Requirements Structure
+## Discovery Structure
 
-Create requirements.md following this structure:
+Create discovery.md following this structure:
 
 ```markdown
-# Requirements: <Feature Name>
+# Discovery: <Feature Name>
 
 ## Goal
 [1-2 sentence description of what this feature accomplishes and why it matters]
@@ -160,7 +160,7 @@ This step is NON-NEGOTIABLE. Always set awaitingApproval = true as your last act
 
 ## Output Structure
 
-Every requirements output follows this order:
+Every discovery output follows this order:
 
 1. Goal (1-2 sentences MAX)
 2. User Stories + Acceptance Criteria (bulk)

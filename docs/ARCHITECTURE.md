@@ -15,8 +15,8 @@ CEO Ralph follows a hierarchical architecture where Claude Opus 4.5 acts as the 
 │                         CEO LAYER (Claude Opus 4.5)                          │
 │                                                                              │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │  Research   │  │Requirements │  │   Design    │  │   Tasks     │        │
-│  │  Analyst    │  │  Manager    │  │  Architect  │  │  Planner    │        │
+│  │  Discovery  │  │   Plan      │  │ Execution   │  │  QA/Review  │        │
+│  │ Research+Req│  │ Design+Tasks│  │   Codex     │  │   QA/CEO    │        │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘        │
 │                                                                              │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
@@ -111,11 +111,11 @@ User Goal
     │
     ▼
 ┌─────────┐    ┌─────────────┐    ┌──────────┐    ┌─────────┐    ┌─────────┐
-│Research │───▶│Requirements │───▶│  Design  │───▶│  Tasks  │───▶│ Execute │
+│Discovery│───▶│   Plan     │───▶│ Execute │
 └─────────┘    └─────────────┘    └──────────┘    └─────────┘    └─────────┘
     │                │                  │              │              │
     ▼                ▼                  ▼              ▼              ▼
-research.md    requirements.md     design.md      tasks.md        code!
+discovery.md            tasks.md           code!
 ```
 
 ### Execution Flow
@@ -226,9 +226,8 @@ Target distribution for balanced subscription usage:
 
 | Activity | Model | ~Tokens |
 |----------|-------|---------|
-| Research | Claude | 3000 |
-| Requirements | Claude | 2000 |
-| Design | Claude | 3000 |
+| Discovery | Claude | 4000 |
+| Plan | Claude | 4000 |
 | Task Planning | Claude | 2000 |
 | Review (per task) | Claude | 500 |
 | Implementation (per task) | Codex | 3000 |

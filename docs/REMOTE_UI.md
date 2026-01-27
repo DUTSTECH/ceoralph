@@ -57,7 +57,7 @@ Create a new approval request:
 ```bash
 python remote-ui/remote_ui.py request \
   --title "Approve research findings" \
-  --prompt "Review research.md and approve to continue."
+  --prompt "Review discovery.md and approve to continue."
 ```
 
 Wait for a response:

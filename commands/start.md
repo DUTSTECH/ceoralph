@@ -1,6 +1,6 @@
 ---
 description: Smart entry point that detects if you need a new spec or should resume existing
-argument-hint: [name] [goal] [--fresh] [--quick] [--commit-spec] [--no-commit-spec]
+argument-hint: [name] [goal] [--fresh] [--quick] [--lite] [--commit-spec] [--no-commit-spec]
 allowed-tools: [Read, Write, Bash, Task, AskUserQuestion]
 ---
 
@@ -49,7 +49,7 @@ git rev-parse --verify origin/main 2>/dev/null && echo "main" || echo "master"
    |   |   - If spec name not yet known, use temp name: feat/spec-work-<timestamp>
    |   |   - Create and switch: git checkout -b <branch-name>
    |   |   - Inform user: "Created branch '<branch-name>' for this work"
-   |   |   - Suggest: "Run /ceo-ralph:research to start the research phase."
+   |   |   - Suggest: "Run /ceo-ralph:discovery to start the discovery phase."
    |   |
    |   +-- If user chooses 2 (worktree):
    |   |   - Generate branch name from spec name: feat/$specName
@@ -58,7 +58,7 @@ git rev-parse --verify origin/main 2>/dev/null && echo "main" || echo "master"
    |   |   - Inform user: "Created worktree at '<path>' on branch '<branch-name>'"
    |   |   - IMPORTANT: Suggest user to cd to worktree and resume conversation there:
    |   |     "For best results, cd to '<path>' and start a new Claude Code session from there."
-   |   |     "Then run /ceo-ralph:research to begin."
+   |   |     "Then run /ceo-ralph:discovery to begin."
    |   |   - STOP HERE - do not continue to Parse Arguments (user needs to switch directories)
    |   |
    |   +-- Continue to Parse Arguments
@@ -74,7 +74,7 @@ git rev-parse --verify origin/main 2>/dev/null && echo "main" || echo "master"
        |
        +-- If user chooses 1 (continue):
        |   - Stay on current branch
-       |   - Suggest: "Run /ceo-ralph:research to start the research phase."
+       |   - Suggest: "Run /ceo-ralph:discovery to start the discovery phase."
        |   - Continue to Parse Arguments
        |
        +-- If user chooses 2 (new branch):
@@ -82,7 +82,7 @@ git rev-parse --verify origin/main 2>/dev/null && echo "main" || echo "master"
        |   - If spec name not yet known, use temp name: feat/spec-work-<timestamp>
        |   - Create and switch: git checkout -b <branch-name>
        |   - Inform user: "Created branch '<branch-name>' for this work"
-       |   - Suggest: "Run /ceo-ralph:research to start the research phase."
+       |   - Suggest: "Run /ceo-ralph:discovery to start the discovery phase."
        |   - Continue to Parse Arguments
        |
        +-- If user chooses 3 (worktree):
@@ -92,7 +92,7 @@ git rev-parse --verify origin/main 2>/dev/null && echo "main" || echo "master"
            - Inform user: "Created worktree at '<path>' on branch '<branch-name>'"
            - IMPORTANT: Suggest user to cd to worktree and resume conversation there:
              "For best results, cd to '<path>' and start a new Claude Code session from there."
-             "Then run /ceo-ralph:research to begin."
+             "Then run /ceo-ralph:discovery to begin."
            - STOP HERE - do not continue to Parse Arguments (user needs to switch directories)
 ```
 
@@ -138,7 +138,7 @@ After worktree creation:
     cd <path>
     claude
 
-  Then run /ceo-ralph:research to begin the research phase.
+  Then run /ceo-ralph:discovery to begin the discovery phase.
   ```
 - STOP the command here - do not continue to Parse Arguments or create spec files
 - The user needs to switch directories first to work in the worktree
@@ -166,17 +166,15 @@ You MUST delegate ALL substantive work to subagents. This is NON-NEGOTIABLE rega
 **NEVER do any of these yourself:**
 - Write code or modify source files
 - Perform research or analysis
-- Generate spec artifacts (research.md, requirements.md, design.md, tasks.md)
+- Generate spec artifacts (discovery.md, tasks.md)
 - Execute task steps
 - Run verification commands as part of task execution
 
 **ALWAYS delegate to the appropriate subagent:**
 | Work Type | Subagent |
 |-----------|----------|
-| Research | `research-analyst` |
-| Requirements | `product-manager` |
-| Design | `architect-reviewer` |
-| Task Planning | `task-planner` |
+| Discovery (research + requirements) | `research-analyst` + `product-manager` |
+| Plan (design + tasks) | `architect-reviewer` + `task-planner` |
 | Artifact Generation (quick mode) | `plan-synthesizer` |
 | Task Execution | `codex` via MCP |
 
@@ -190,7 +188,7 @@ In normal mode (no `--quick` flag), you MUST STOP your response after each subag
 
 **After invoking a subagent via Task tool:**
 1. Wait for subagent to return
-2. Output a brief status message (e.g., "Research phase complete. Run /ceo-ralph:requirements to continue.")
+2. Output a brief status message (e.g., "Discovery phase complete. Run /ceo-ralph:plan to continue.")
 3. **END YOUR RESPONSE IMMEDIATELY**
 
 **DO NOT:**
@@ -206,6 +204,7 @@ From `$ARGUMENTS`, extract:
 - **goal**: Everything after the name except flags (optional)
 - **--fresh**: Force new spec, overwrite if exists
 - **--quick**: Skip interactive phases, auto-generate all specs, start execution immediately
+- **--lite**: Use lite planning (short plan + tasks only)
 - **--commit-spec**: Commit and push spec files after each phase
 - **--no-commit-spec**: Disable committing spec files
 
@@ -213,6 +212,7 @@ Examples:
 - `/ceo-ralph:start user-auth` -> name="user-auth", goal=none
 - `/ceo-ralph:start user-auth Add OAuth2 login` -> name="user-auth", goal="Add OAuth2 login"
 - `/ceo-ralph:start Add OAuth2 login --quick` -> name=auto, goal="Add OAuth2 login"
+- `/ceo-ralph:start Add OAuth2 login --lite` -> name=auto, goal="Add OAuth2 login"
 - `/ceo-ralph:start --fresh user-auth Add OAuth2 login` -> name="user-auth", goal="Add OAuth2 login", fresh
 
 ## Determine Mode
@@ -246,15 +246,17 @@ Store in `.ralph-state.json` as `commitSpec`.
 
 1. Create or resume spec
 2. Ensure `.progress.md` and `.ralph-state.json` exist (create minimal stubs if missing)
-3. If new, start research phase
-3. STOP after each phase for approval
+3. If `--lite`, instruct user to run `/ceo-ralph:plan --lite`
+4. Otherwise, start discovery phase
+5. STOP after each phase for approval
 
 ### Quick Mode (--quick)
 
 1. Create or resume spec
 2. Ensure `.progress.md` and `.ralph-state.json` exist (create minimal stubs if missing)
-3. Auto-generate research, requirements, design, tasks via `plan-synthesizer`
-4. Start execution immediately with `/ceo-ralph:implement`
+3. If `--lite`, auto-generate tasks via `plan-synthesizer` (lite)
+4. Otherwise, auto-generate discovery + tasks via `plan-synthesizer`
+5. Start execution immediately with `/ceo-ralph:implement`
 
 ## Output
 

@@ -20,7 +20,7 @@ Your job: Execute verification and output result signal.
 ```
 1. Parse task description for verification type:
    - Command verification: commands after colon (e.g., "V1 [VERIFY] Quality check: pnpm lint")
-   - AC checklist verification: V6 tasks that check requirements.md
+   - AC checklist verification: V6 tasks that check discovery.md
    - VF verification: tasks containing "VF" or "Verify original issue"
    |
 2. For command verification:
@@ -29,7 +29,7 @@ Your job: Execute verification and output result signal.
    - All commands must pass (exit 0)
    |
 3. For AC checklist verification:
-   - Read requirements.md from spec path
+   - Read discovery.md from spec path
    - Extract all AC-* entries
    - For each AC, verify implementation satisfies it
    - Check code, run tests, inspect behavior as needed
@@ -162,7 +162,7 @@ Return: exit code, stdout, stderr.
 
 For V6 [VERIFY] AC checklist tasks:
 
-1. Read `./specs/<spec>/requirements.md`
+1. Read `./specs/<spec>/discovery.md`
 2. Find all AC-* entries (e.g., AC-1.1, AC-2.3)
 3. For each AC:
    - Read the acceptance criterion text

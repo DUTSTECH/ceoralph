@@ -50,6 +50,7 @@ codex login
 ```
 
 This configures Codex MCP in `~/.claude/settings.json`.
+On Windows, using an absolute Codex CLI path in the MCP config is recommended to avoid PATH issues.
 
 ### Step 5: (Optional) Enable Remote UI Approvals
 
@@ -139,9 +140,7 @@ your-project/
 │   └── my-feature/
 │       ├── .ralph-state.json
 │       ├── .progress.md
-│       ├── research.md
-│       ├── requirements.md
-│       ├── design.md
+│       ├── discovery.md
 │       └── tasks.md
 └── ...
 ```
@@ -153,6 +152,7 @@ your-project/
 1. Check Codex CLI version: `codex --version`
 2. Verify Codex is authenticated: `codex login status`
 3. Check `~/.claude/settings.json` has `mcpServers.codex`
+4. Ensure `mcpServers.codex.command` is an absolute path (Windows especially). Use escaped backslashes in JSON.
 
 ### Codex Auth Errors
 

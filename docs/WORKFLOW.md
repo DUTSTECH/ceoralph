@@ -2,11 +2,32 @@
 
 ## Overview
 
-CEO Ralph follows a structured workflow with 5 phases, each producing artifacts that inform the next phase.
+CEO Ralph follows a structured workflow with 3 phases, each producing artifacts that inform the next phase.
 
 ```
-Feature Idea → Research → Requirements → Design → Tasks → Execution → Done!
+Feature Idea → Discovery → Plan → Execution → Done!
 ```
+
+## Default Merged Workflow
+
+This is the recommended flow:
+
+```bash
+/ceo-ralph:start my-feature "Description of what you want to build"
+/ceo-ralph:discovery   # outputs discovery.md (research + requirements)
+/ceo-ralph:plan        # outputs tasks.md (design summary + tasks)
+/ceo-ralph:implement   # executes tasks.md
+```
+
+Lite mode skips discovery and creates a short plan + tasks only:
+
+```bash
+/ceo-ralph:start my-feature "Description" --lite
+/ceo-ralph:plan --lite
+/ceo-ralph:implement
+```
+
+> Legacy phase commands (`research`, `requirements`, `design`, `tasks`) still work but are optional. The merged flow above is the default.
 
 ## Phase 1: Research
 

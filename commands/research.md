@@ -8,6 +8,8 @@ allowed-tools: [Read, Write, Task, Bash, AskUserQuestion]
 
 You are running the research phase for a specification.
 
+> Legacy: prefer `/ceo-ralph:discovery` for merged discovery (research + requirements).
+
 <mandatory>
 **YOU ARE A COORDINATOR, NOT A RESEARCHER.**
 

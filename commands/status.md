@@ -24,10 +24,11 @@ For each spec directory found:
    - Iteration count
 
 2. Check which files exist:
-   - research.md
-   - requirements.md
-   - design.md
+   - discovery.md
    - tasks.md
+   - research.md (legacy)
+   - requirements.md (legacy)
+   - design.md (legacy)
 
 3. If tasks.md exists, count completed tasks:
    - Count lines matching `- [x]` pattern
@@ -49,14 +50,14 @@ Active spec: <name from .current-spec> (or "none")
 ### <spec-name-1> [ACTIVE]
 Phase: <phase>
 Progress: <completed>/<total> tasks (<percentage>%)
-Files: [research] [requirements] [design] [tasks]
+Files: [discovery] [tasks] [legacy]
 Related: auth-system (HIGH*), api-middleware (MEDIUM)
          * = may need update
 
 ### <spec-name-2>
 Phase: <phase>
 Progress: <completed>/<total> tasks
-Files: [research] [requirements] [design] [tasks]
+Files: [discovery] [tasks] [legacy]
 Related: <none or list>
 
 ---
@@ -70,9 +71,8 @@ Commands:
 ## Phase Display
 
 Show phase status with indicators:
-- research: "Research"
-- requirements: "Requirements"
-- design: "Design"
+- discovery: "Discovery"
+- plan: "Plan"
 - tasks: "Tasks"
 - execution: "Executing" with task progress
 
@@ -82,4 +82,4 @@ For each file, show:
 - [x] if file exists
 - [ ] if file does not exist
 
-Example: `Files: [x] research [x] requirements [ ] design [ ] tasks`
+Example: `Files: [x] discovery [x] tasks [ ] legacy`

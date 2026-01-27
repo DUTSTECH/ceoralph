@@ -1,6 +1,6 @@
 ---
-description: Update spec files methodically after execution (requirements → design → tasks)
-argument-hint: [spec-name] [--file=requirements|design|tasks]
+description: Update spec files methodically after execution (discovery → tasks)
+argument-hint: [spec-name] [--file=discovery|tasks]
 allowed-tools: [Read, Write, Edit, Task, Bash, AskUserQuestion]
 ---
 
@@ -31,8 +31,7 @@ Do NOT write spec content yourself.
 1. Check `./specs/$spec/` directory exists
 2. Read `.ralph-state.json` if exists
 3. Identify which spec files exist:
-   - `requirements.md`
-   - `design.md`
+   - `discovery.md`
    - `tasks.md`
 
 If no spec files exist, error: "No spec files found. Run /ceo-ralph:start first."
@@ -40,10 +39,9 @@ If no spec files exist, error: "No spec files found. Run /ceo-ralph:start first.
 ## Determine Refactor Scope
 
 Check `$ARGUMENTS` for `--file=` flag:
-- If `--file=requirements`: Only refactor requirements.md
-- If `--file=design`: Only refactor design.md
+- If `--file=discovery`: Only refactor discovery.md
 - If `--file=tasks`: Only refactor tasks.md
-- If no flag: Refactor all files in order (requirements → design → tasks)
+- If no flag: Refactor all files in order (discovery → tasks)
 
 ## Initial Assessment
 
@@ -57,8 +55,7 @@ Before starting, gather context:
 Spec: $spec
 
 Files to review:
-- requirements.md: [exists/missing] - [brief summary: X user stories, Y requirements]
-- design.md: [exists/missing] - [brief summary: X components, Y decisions]
+- discovery.md: [exists/missing] - [brief summary: X stories, Y requirements]
 - tasks.md: [exists/missing] - [brief summary: X tasks, Y completed]
 
 Implementation learnings from .progress.md:
@@ -68,7 +65,7 @@ Implementation learnings from .progress.md:
 
 ## File-by-File Refactoring
 
-Process files in order: requirements → design → tasks
+Process files in order: discovery → tasks
 
 For each file that exists and is in scope:
 
@@ -234,37 +231,22 @@ Task:
 
 After specialist completes, check for CASCADE_NEEDED:
 
-If requirements.md was updated and CASCADE_NEEDED includes design:
+If discovery.md was updated and CASCADE_NEEDED includes tasks:
 ```
 AskUserQuestion:
   questions:
-    - question: "Requirements changed. Update design.md to match?"
-      header: "Cascade"
-      options:
-        - label: "Yes, update design"
-          description: "Align design with new requirements"
-        - label: "Skip design update"
-          description: "Design is still valid"
-        - label: "Regenerate design"
-          description: "Create fresh design from new requirements"
-```
-
-If design.md was updated and CASCADE_NEEDED includes tasks:
-```
-AskUserQuestion:
-  questions:
-    - question: "Design changed. Update tasks.md to match?"
+    - question: "Discovery changed. Update tasks.md to match?"
       header: "Cascade"
       options:
         - label: "Yes, update tasks"
-          description: "Align tasks with new design"
+          description: "Align tasks with new discovery"
         - label: "Skip tasks update"
           description: "Tasks are still valid"
         - label: "Regenerate tasks"
-          description: "Create fresh task plan from new design"
+          description: "Create fresh task plan from new discovery"
 ```
 
-If "Regenerate" is selected, delegate to the appropriate original agent (architect-reviewer for design, task-planner for tasks) instead of refactor-specialist.
+If "Regenerate" is selected, delegate to `task-planner` instead of refactor-specialist.
 
 ## Update State
 

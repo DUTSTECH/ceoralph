@@ -18,7 +18,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 
 
-CONFIG_DIR = os.path.join(os.path.expanduser("~"), ".ceo-ralph", "remote-ui")
+CONFIG_DIR = os.environ.get(
+    "CEO_RALPH_REMOTE_UI_DIR",
+    os.path.join(os.path.expanduser("~"), ".ceo-ralph", "remote-ui"),
+)
 CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
 REQUESTS_PATH = os.path.join(CONFIG_DIR, "requests.json")
 SESSION_COOKIE = "ceo_ralph_session"
@@ -261,48 +264,186 @@ APP_HTML = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CEO Ralph - Board Approval Portal</title>
+  <title>CEO Ralph — Approval Console</title>
   <style>
-    :root { color-scheme: light; }
-    body { margin: 0; font-family: "Iowan Old Style", "Palatino", serif; background: radial-gradient(circle at top, #fdfcf9 0%, #f1ece4 45%, #e8dfd2 100%); color: #2b2b2b; }
-    header { padding: 28px 32px; background: #161717; color: #f6f2ea; border-bottom: 3px solid #c8a14a; }
-    h1 { margin: 0; font-size: 22px; letter-spacing: 0.2em; text-transform: uppercase; }
-    .subhead { margin-top: 6px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #d7c69a; }
-    main { padding: 24px 32px 48px; }
-    .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-    .card { background: #fff; border: 1px solid #e1d6c7; border-radius: 14px; padding: 18px; box-shadow: 0 12px 24px rgba(27, 21, 10, 0.08); }
-    .status { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
-    .pending { color: #b36a00; }
-    .approved { color: #1a7f37; }
-    .denied { color: #b42318; }
-    h3 { margin: 10px 0 6px; font-size: 18px; }
-    textarea { width: 100%; min-height: 84px; border: 1px solid #d7cdbf; border-radius: 10px; padding: 10px; font-family: inherit; background: #faf7f1; }
-    button { padding: 10px 16px; border-radius: 999px; border: none; cursor: pointer; font-weight: 700; letter-spacing: 0.04em; }
-    .approve { background: #1a7f37; color: #fff; }
-    .deny { background: #b42318; color: #fff; margin-left: 8px; }
-    .meta { font-size: 12px; color: #5b5b5b; margin-top: 6px; }
+    :root {
+      color-scheme: light;
+      --ink: #1f1d1b;
+      --muted: #6f675f;
+      --accent: #c59a4a;
+      --accent-strong: #8b5e14;
+      --paper: #f7f1e6;
+      --panel: #fffdf9;
+      --success: #1a7f37;
+      --danger: #b42318;
+      --warn: #b36a00;
+      --shadow: 0 18px 40px rgba(30, 22, 10, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino", "Georgia", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(197, 154, 74, 0.18), transparent 48%),
+        radial-gradient(circle at 80% 10%, rgba(139, 94, 20, 0.16), transparent 46%),
+        linear-gradient(180deg, #fefbf4 0%, #f1e8d7 100%);
+      min-height: 100vh;
+    }
+    header {
+      padding: 28px 32px;
+      background: #151515;
+      color: #f8f2e9;
+      border-bottom: 4px solid var(--accent);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    h1 { margin: 0; font-size: 20px; letter-spacing: 0.22em; text-transform: uppercase; }
+    .subhead { margin-top: 8px; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #e3cc9b; }
+    main { padding: 24px 32px 52px; }
+    .dashboard {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(260px, 360px) minmax(280px, 1fr);
+      align-items: start;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid #e4d7c4;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 { margin: 0 0 10px; font-size: 18px; }
+    .panel p { margin: 6px 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: 1px solid currentColor;
+      background: rgba(197, 154, 74, 0.08);
+    }
+    .grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .card {
+      background: #fff;
+      border: 1px solid #e1d6c7;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 14px 28px rgba(27, 21, 10, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .status {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .pending { color: var(--warn); }
+    .approved { color: var(--success); }
+    .denied { color: var(--danger); }
+    h3 { margin: 0; font-size: 18px; }
+    .prompt {
+      font-size: 14px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      background: #fbf7ef;
+      border: 1px dashed #e0d1b5;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 0;
+    }
+    textarea {
+      width: 100%;
+      min-height: 96px;
+      border: 1px solid #d7cdbf;
+      border-radius: 12px;
+      padding: 12px;
+      font-family: inherit;
+      background: #fdfbf6;
+      resize: vertical;
+    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .approve { background: var(--success); color: #fff; }
+    .deny { background: var(--danger); color: #fff; }
+    .meta { font-size: 12px; color: var(--muted); }
+    .divider { height: 1px; background: #e7dcc9; margin: 12px 0; }
+    .empty { text-align: center; color: var(--muted); padding: 24px 12px; }
+    @media (max-width: 920px) {
+      .dashboard { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>CEO Ralph - Board Approval Portal</h1>
-    <div class="subhead">Executive approval queue</div>
+    <h1>CEO Ralph — Approval Console</h1>
+    <div class="subhead">Executive approvals · secure channel</div>
   </header>
   <main>
-    <div class="grid" id="requests"></div>
+    <div class="dashboard">
+      <section class="panel">
+        <h2>Queue Status</h2>
+        <div class="status-pill" id="status-pill">Awaiting requests</div>
+        <p id="status-count">0 pending</p>
+        <div class="divider"></div>
+        <p id="last-refresh">Last refresh: —</p>
+        <p>Approvals here map directly to Claude Code prompts. Your response is written back to the active session.</p>
+      </section>
+      <section>
+        <div class="grid" id="requests"></div>
+      </section>
+    </div>
   </main>
   <script>
+    function formatTimestamp(ts) {
+      if (!ts) return '';
+      try {
+        return new Date(ts).toLocaleString();
+      } catch (err) {
+        return ts;
+      }
+    }
+
     async function fetchRequests() {
       const res = await fetch('/api/requests');
-      if (!res.ok) return;
+      if (!res.ok) {
+        document.getElementById('status-pill').textContent = 'Offline';
+        return;
+      }
       const data = await res.json();
       renderRequests(data.requests || []);
     }
 
     function renderRequests(items) {
       const container = document.getElementById('requests');
+      const pendingCount = items.filter(item => item.status === 'pending').length;
+      document.getElementById('status-count').textContent = `${pendingCount} pending`;
+      document.getElementById('status-pill').textContent = pendingCount ? 'Action needed' : 'All clear';
+      document.getElementById('last-refresh').textContent = `Last refresh: ${new Date().toLocaleTimeString()}`;
       if (!items.length) {
-        container.innerHTML = '<div class="card">No pending requests.</div>';
+        container.innerHTML = '';
+        const empty = document.createElement('div');
+        empty.className = 'card empty';
+        empty.textContent = 'No requests yet. Claude Code prompts will appear here.';
+        container.appendChild(empty);
         return;
       }
       container.innerHTML = '';
@@ -310,22 +451,36 @@ APP_HTML = """<!doctype html>
         const card = document.createElement('div');
         card.className = 'card';
         const statusClass = item.status || 'pending';
-        card.innerHTML = `
-          <div class="status ${statusClass}">${statusClass}</div>
-          <h3>${item.title}</h3>
-          <p>${item.prompt}</p>
-          <div class="meta">Requested: ${item.createdAt || ''}</div>
-          <div style="margin-top:12px;">
-            <textarea placeholder="Add context or answer...">${item.response || ''}</textarea>
-            <div style="margin-top:10px;">
-              <button class="approve">Approve</button>
-              <button class="deny">Deny</button>
-            </div>
-          </div>
-        `;
-        const textarea = card.querySelector('textarea');
-        const approveBtn = card.querySelector('.approve');
-        const denyBtn = card.querySelector('.deny');
+        const status = document.createElement('div');
+        status.className = `status ${statusClass}`;
+        status.textContent = statusClass;
+        const title = document.createElement('h3');
+        title.textContent = item.title || 'Request';
+        const prompt = document.createElement('pre');
+        prompt.className = 'prompt';
+        prompt.textContent = item.prompt || '';
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `Requested: ${formatTimestamp(item.createdAt)}`;
+        const textarea = document.createElement('textarea');
+        textarea.placeholder = 'Add context or answer...';
+        textarea.value = item.response || '';
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        const approveBtn = document.createElement('button');
+        approveBtn.className = 'approve';
+        approveBtn.textContent = 'Approve';
+        const denyBtn = document.createElement('button');
+        denyBtn.className = 'deny';
+        denyBtn.textContent = 'Deny';
+        actions.appendChild(approveBtn);
+        actions.appendChild(denyBtn);
+        card.appendChild(status);
+        card.appendChild(title);
+        card.appendChild(prompt);
+        card.appendChild(meta);
+        card.appendChild(textarea);
+        card.appendChild(actions);
         approveBtn.onclick = () => submitDecision(item.id, 'approved', textarea.value);
         denyBtn.onclick = () => submitDecision(item.id, 'denied', textarea.value);
         if (item.status !== 'pending') {
@@ -347,7 +502,7 @@ APP_HTML = """<!doctype html>
     }
 
     fetchRequests();
-    setInterval(fetchRequests, 3000);
+    setInterval(fetchRequests, 2500);
   </script>
 </body>
 </html>
@@ -358,19 +513,54 @@ LOGIN_HTML = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login - CEO Ralph - Board Approval Portal</title>
+  <title>Login — CEO Ralph</title>
   <style>
-    body { margin: 0; font-family: "Iowan Old Style", "Palatino", serif; background: radial-gradient(circle at top, #fdfcf9 0%, #f1ece4 45%, #e8dfd2 100%); color: #2b2b2b; }
-    main { max-width: 420px; margin: 10vh auto; background: #fff; padding: 28px; border-radius: 16px; border: 1px solid #e1d6c7; box-shadow: 0 12px 24px rgba(27, 21, 10, 0.08); }
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino", "Georgia", serif;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(197, 154, 74, 0.16), transparent 48%),
+        linear-gradient(180deg, #fefbf4 0%, #f1e8d7 100%);
+      color: #2b2b2b;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    main {
+      width: min(420px, 92vw);
+      background: #fff;
+      padding: 32px;
+      border-radius: 18px;
+      border: 1px solid #e1d6c7;
+      box-shadow: 0 16px 30px rgba(27, 21, 10, 0.12);
+    }
+    h1 { margin: 0 0 10px; font-size: 20px; letter-spacing: 0.18em; text-transform: uppercase; }
+    p { margin: 0 0 18px; color: #6f675f; font-size: 13px; }
     label { display: block; margin-bottom: 8px; font-weight: 600; }
-    input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d7cdbf; font-family: inherit; background: #faf7f1; }
-    button { margin-top: 16px; padding: 12px 14px; border-radius: 999px; border: none; background: #1d1f1f; color: #f6f2ea; font-weight: 700; cursor: pointer; width: 100%; letter-spacing: 0.06em; text-transform: uppercase; font-size: 12px; }
+    input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #d7cdbf; font-family: inherit; background: #faf7f1; }
+    button {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: none;
+      background: #1d1f1f;
+      color: #f6f2ea;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
     .error { background: #fbe9e7; border: 1px solid #f2c1bc; color: #7a271a; padding: 10px 12px; border-radius: 10px; margin: 12px 0; font-size: 13px; }
   </style>
 </head>
 <body>
   <main>
-    <h1>Board Portal Access</h1>
+    <h1>Board Portal</h1>
+    <p>Enter your approval passphrase to access the live queue.</p>
     {error_block}
     <form method="post" action="/login">
       <label for="password">Password</label>
@@ -472,6 +662,9 @@ class RemoteUIHandler(BaseHTTPRequestHandler):
                 return
             html_response(self, APP_HTML)
             return
+        if path == "/health":
+            json_response(self, {"ok": True})
+            return
         if path == "/api/requests":
             if not self._require_auth():
                 return
@@ -565,6 +758,8 @@ def cmd_start(args):
         config = update_config({"instanceId": secrets.token_hex(6)})
     access_key = None
     ensure_requests()
+    if args.port is not None and args.port != config.get("port"):
+        config = update_config({"port": args.port})
     port = config["port"]
     if access_key:
         print("Remote UI configured.")
@@ -669,10 +864,18 @@ def cmd_enable(args):
     if not config.get("instanceId"):
         config = update_config({"instanceId": secrets.token_hex(6)})
     ensure_requests()
+    if args.port is not None and args.port != config.get("port"):
+        config = update_config({"port": args.port})
     port = config["port"]
     start_server_thread(args.bind, port, config)
     print(f"Instance ID: {config.get('instanceId')}")
     print(f"Local URL: http://127.0.0.1:{port}")
+    try:
+        import urllib.request
+
+        urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2)
+    except Exception as exc:
+        raise RuntimeError(f"Local Remote UI is not responding: {exc.__class__.__name__}")
     try:
         process = subprocess.Popen(
             [
@@ -720,12 +923,12 @@ def build_parser():
     setup_parser.set_defaults(func=cmd_setup)
 
     start_parser = subparsers.add_parser("start", help="Start the remote UI server")
-    start_parser.add_argument("--port", type=int, default=8123)
+    start_parser.add_argument("--port", type=int, default=None)
     start_parser.add_argument("--bind", default="127.0.0.1")
     start_parser.set_defaults(func=cmd_start)
 
     enable_parser = subparsers.add_parser("enable", help="Start server + HTTPS tunnel")
-    enable_parser.add_argument("--port", type=int, default=8123)
+    enable_parser.add_argument("--port", type=int, default=None)
     enable_parser.add_argument("--bind", default="127.0.0.1")
     enable_parser.add_argument("--password")
     enable_parser.add_argument("--password-stdin", action="store_true")

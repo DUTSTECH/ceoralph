@@ -11,7 +11,7 @@ Configure Codex (GPT) for CEO Ralph via Codex CLI MCP.
 
 Run:
 ```bash
-if command -v codex >/dev/null 2>&1; then codex --version 2>&1 | head -1; else echo "CODEX_MISSING"; fi
+if command -v codex >/dev/null 2>&1; then command -v codex; codex --version 2>&1 | head -1; else echo "CODEX_MISSING"; fi
 ```
 
 If you're using PowerShell without Bash, run:
@@ -75,7 +75,7 @@ Merge this into `~/.claude/settings.json`:
   "mcpServers": {
     "codex": {
       "type": "stdio",
-      "command": "codex",
+      "command": "<CODEX_PATH>",
       "args": ["-m", "gpt-5.2-codex", "mcp-server"]
     }
   }
@@ -85,6 +85,8 @@ Merge this into `~/.claude/settings.json`:
 **CRITICAL**:
 - Merge with existing settings; do not overwrite.
 - Preserve other `mcpServers` entries.
+- Use the absolute Codex CLI path from Step 1 for `<CODEX_PATH>`.
+- **Windows**: escape backslashes in JSON (e.g., `C:\\Users\\user\\.local\\bin\\codex.exe`).
 
 ## Step 5: Report Status
 

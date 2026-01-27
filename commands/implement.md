@@ -28,7 +28,7 @@ If not available:
 ## Validate Prerequisites
 
 1. Check `./specs/$spec/` directory exists
-2. Check `./specs/$spec/tasks.md` exists. If not: error "Tasks not found. Run /ceo-ralph:tasks first."
+2. Check `./specs/$spec/tasks.md` exists. If not: error "Tasks not found. Run /ceo-ralph:plan first."
 3. Ensure `./specs/$spec/.progress.md` exists. If missing, create a minimal stub with the goal and phase.
 
 ## Parse Arguments
@@ -61,7 +61,8 @@ For each task:
    - Task description (Do/Files/Done when/Verify/Commit)
    - Relevant files (from Files section)
    - `./specs/$spec/.progress.md`
-   - `./specs/$spec/design.md` (if needed)
+   - `./specs/$spec/discovery.md` (if exists)
+   - `./specs/$spec/.design-summary.md` or `design.md` (if exists)
 3. Send a single-task execution prompt to Codex MCP
 
 Use the spec-executor instructions as the base prompt:

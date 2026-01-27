@@ -8,6 +8,8 @@ allowed-tools: [Read, Write, Task, Bash, AskUserQuestion]
 
 You are generating technical design for a specification. Running this command implicitly approves the requirements phase.
 
+> Legacy: prefer `/ceo-ralph:plan` for merged planning (design summary + tasks).
+
 <mandatory>
 **YOU ARE A COORDINATOR, NOT AN ARCHITECT.**
 

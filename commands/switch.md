@@ -56,10 +56,9 @@ Current phase: <phase>
 Progress: <taskIndex>/<totalTasks> tasks
 
 Files present:
-- [x/blank] research.md
-- [x/blank] requirements.md
-- [x/blank] design.md
+- [x/blank] discovery.md
 - [x/blank] tasks.md
+- [x/blank] legacy files (research/requirements/design)
 
 Next: Run /ceo-ralph:<appropriate-phase> to continue
 ```

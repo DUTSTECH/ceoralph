@@ -71,13 +71,16 @@ If a verification seems to require manual testing, find an automated alternative
 </mandatory>
 
 When invoked:
-1. Read requirements.md and design.md thoroughly
+1. Read discovery.md and any design summary thoroughly
 2. Break implementation into POC and production phases
 3. Create tasks that are autonomous-execution ready
 4. Include verification steps and commit messages
-5. Reference requirements/design in each task
+5. Reference discovery requirements and design summary in each task
 6. Reference applicable principles (P-#) in each task
 7. Append learnings to .progress.md
+
+Also:
+- Include a short **Design Summary** section at the top of tasks.md (8-12 bullet lines).
 
 ## Use Explore for Context Gathering
 
@@ -190,7 +193,7 @@ Insert quality gate checkpoints throughout the task list to catch issues early:
 **Checkpoint Task Format:**
 ```markdown
 - [ ] X.Y [VERIFY] Quality checkpoint: <lint cmd> && <typecheck cmd>
-  - **Do**: Run quality commands discovered from research.md
+  - **Do**: Run quality commands discovered from discovery.md
   - **Verify**: All commands exit 0
   - **Done when**: No lint errors, no type errors
   - **Commit**: `chore(scope): pass quality checkpoint` (only if fixes were needed)
@@ -232,7 +235,7 @@ Replace generic "Quality Checkpoint" tasks with [VERIFY] tagged tasks:
   - **Commit**: None
 
 - [ ] V6 [VERIFY] AC checklist
-  - **Do**: Read requirements.md, programmatically verify each AC-* is satisfied by checking code/tests/behavior
+  - **Do**: Read discovery.md, programmatically verify each AC-* is satisfied by checking code/tests/behavior
   - **Verify**: Grep codebase for AC implementation, run relevant test commands
   - **Done when**: All acceptance criteria confirmed met via automated checks
   - **Commit**: None
@@ -240,7 +243,7 @@ Replace generic "Quality Checkpoint" tasks with [VERIFY] tagged tasks:
 
 **Standard format**: All [VERIFY] tasks follow Do/Verify/Done when/Commit format like regular tasks.
 
-**Discovery**: Read research.md for actual project commands. Do NOT assume `pnpm lint` or `npm test` exists.
+**Discovery**: Read discovery.md for actual project commands. Do NOT assume `pnpm lint` or `npm test` exists.
 </mandatory>
 
 ## Tasks Structure
@@ -275,7 +278,7 @@ Focus: Validate the idea works end-to-end. Skip tests, accept hardcoded values.
   - _Design: Component B_
 
 - [ ] 1.3 [VERIFY] Quality checkpoint: <lint cmd> && <typecheck cmd>
-  - **Do**: Run quality commands discovered from research.md
+  - **Do**: Run quality commands discovered from discovery.md
   - **Verify**: All commands exit 0
   - **Done when**: No lint errors, no type errors
   - **Commit**: `chore(scope): pass quality checkpoint` (only if fixes needed)
@@ -313,7 +316,7 @@ After POC validated, clean up code.
   - _Design: Error Handling_
 
 - [ ] 2.3 [VERIFY] Quality checkpoint: <lint cmd> && <typecheck cmd> && <test cmd>
-  - **Do**: Run quality commands discovered from research.md
+  - **Do**: Run quality commands discovered from discovery.md
   - **Verify**: All commands exit 0
   - **Done when**: No lint errors, no type errors, tests pass
   - **Commit**: `chore(scope): pass quality checkpoint` (only if fixes needed)
@@ -339,7 +342,7 @@ After POC validated, clean up code.
   - _Design: Test Strategy_
 
 - [ ] 3.3 [VERIFY] Quality checkpoint: <lint cmd> && <typecheck cmd> && <test cmd>
-  - **Do**: Run quality commands discovered from research.md
+  - **Do**: Run quality commands discovered from discovery.md
   - **Verify**: All commands exit 0
   - **Done when**: No lint errors, no type errors, tests pass
   - **Commit**: `chore(scope): pass quality checkpoint` (only if fixes needed)
