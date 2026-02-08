@@ -8,8 +8,8 @@
     {
       "name": "ceo-ralph",
       "source": "./",
-      "description": "Claude Opus 4.5 as CEO orchestrator with GPT Codex workers for spec-driven autonomous development",
-      "version": "1.0.11",
+      "description": "Claude Opus CEO orchestrator with dual-executor (Codex MCP + Task sub-agents), delegation tracking, and web dashboard for spec-driven autonomous development",
+      "version": "1.1.0",
       "author": {
         "name": "DUTSTECH",
         "url": "https://github.com/DUTSTECH"

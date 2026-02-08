@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CEO Ralph Delegation State",
+  "description": "Tracks worker delegation and execution status for a spec",
+  "type": "object",
+  "required": ["specName", "executor", "workers", "stats"],
+  "properties": {
+    "specName": {
+      "type": "string",
+      "description": "Name of the active spec"
+    },
+    "executor": {
+      "type": "string",
+      "enum": ["codex", "task-agent", "auto"],
+      "description": "Configured executor type"
+    },
+    "workers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Worker"
+      },
+      "description": "List of worker execution entries"
+    },
+    "stats": {
+      "$ref": "#/definitions/Stats",
+      "description": "Aggregate execution statistics"
+    }
+  },
+  "definitions": {
+    "Worker": {
+      "type": "object",
+      "required": ["workerId", "taskId", "executor", "status", "startedAt", "attempt"],
+      "properties": {
+        "workerId": {
+          "type": "string",
+          "pattern": "^w-\\d{3}$",
+          "description": "Unique worker identifier (e.g., w-001)"
+        },
+        "taskId": {
+          "type": "string",
+          "description": "Task identifier from tasks.md (e.g., 1.1)"
+        },
+        "taskTitle": {
+          "type": "string",
+          "description": "Human-readable task title"
+        },
+        "executor": {
+          "type": "string",
+          "enum": ["codex", "task-agent"],
+          "description": "Which executor ran this worker"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "running", "completed", "failed"],
+          "description": "Current worker status"
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when worker started"
+        },
+        "completedAt": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when worker completed"
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Attempt number for this task"
+        },
+        "result": {
+          "type": ["string", "null"],
+          "enum": ["TASK_COMPLETE", "TASK_BLOCKED", "FAILED", null],
+          "description": "Execution result signal"
+        },
+        "summary": {
+          "type": ["string", "null"],
+          "description": "Brief output summary from worker"
+        },
+        "filesChanged": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of files modified by this worker"
+        },
+        "commitHash": {
+          "type": ["string", "null"],
+          "description": "Git commit hash if changes were committed"
+        },
+        "durationMs": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Execution duration in milliseconds"
+        }
+      }
+    },
+    "Stats": {
+      "type": "object",
+      "required": ["total", "completed", "failed", "running", "pending"],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total workers spawned"
+        },
+        "completed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Successfully completed workers"
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Failed workers"
+        },
+        "running": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Currently running workers"
+        },
+        "pending": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Remaining tasks not yet started"
+        },
+        "avgDurationMs": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average duration of completed workers in ms"
+        }
+      }
+    }
+  }
+}

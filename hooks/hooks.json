@@ -9,6 +9,26 @@
           }
         ]
       }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -lc \"ROOT=\\\"${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_DIR:-}}\\\"; if [ -z \\\"$ROOT\\\" ]; then exit 0; fi; \\\"$ROOT/hooks/scripts/hook-dispatch.sh\\\" subagent-start\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -lc \"ROOT=\\\"${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PLUGIN_DIR:-}}\\\"; if [ -z \\\"$ROOT\\\" ]; then exit 0; fi; \\\"$ROOT/hooks/scripts/hook-dispatch.sh\\\" subagent-stop\""
+          }
+        ]
+      }
     ]
   }
 }

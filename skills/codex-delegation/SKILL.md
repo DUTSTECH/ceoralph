@@ -1,15 +1,35 @@
 ---
 name: codex-delegation
-description: How to delegate implementation tasks to Codex workers via MCP. Use when executing tasks that require code implementation by GPT Codex workers.
+description: How to delegate implementation tasks to workers via Codex MCP or Task sub-agents. Use when executing tasks that require code implementation.
 ---
 
-# Codex Delegation Skill
+# Worker Delegation Skill
 
-This skill defines how the CEO (Claude) delegates tasks to Codex workers.
+This skill defines how the CEO (Claude) delegates tasks to workers. Workers can be either Codex MCP (GPT) or Claude Task sub-agents.
+
+## Executor Selection
+
+The executor is determined by priority:
+1. `--executor` argument (explicit override)
+2. `./specs/.ralph-executor.json` (saved config from `/ceo-ralph:setup`)
+3. Runtime detection: check if `mcp__codex__codex` tool exists
+4. Default: `auto` (try Codex, fall back to Task)
+
+### Codex MCP Executor
+- Tool: `mcp__codex__codex`
+- Runs GPT models in a sandboxed environment
+- Best for: code generation, file manipulation
+- Requires: Codex CLI installed + authenticated
+
+### Task Sub-agent Executor
+- Tool: `Task` with `subagent_type: "general-purpose"`
+- Runs Claude sub-agents (model: sonnet)
+- Best for: when Codex is unavailable, or for Claude-native tasks
+- Requires: nothing (built into Claude Code)
 
 ## When to Delegate
 
-Delegate to Codex workers when:
+Delegate to workers when:
 - Task is implementation-focused (writing code)
 - Task has clear acceptance criteria
 - Task doesn't require strategic decisions
@@ -17,7 +37,7 @@ Delegate to Codex workers when:
 
 Do NOT delegate when:
 - Task requires architecture decisions
-- Task is a [VERIFY] checkpoint
+- Task is a [VERIFY] checkpoint (delegate to qa-engineer instead)
 - Task requires user interaction
 - Task involves research or analysis
 
@@ -100,40 +120,44 @@ If context is too large:
 ### Step 1: Prepare
 
 ```markdown
-I am preparing to delegate Task {id} to a Codex worker.
+I am preparing to delegate Task {id} to a worker.
 
 **Task**: {title}
+**Executor**: {codex|task-agent}
 **Files to include**: {list}
 **Constraints**: {list}
 ```
 
 ### Step 2: Delegate
 
-```markdown
-Delegating via MCP: mcp__codex__codex
-
-Context package prepared with {n} files and {n} constraints.
+**Codex MCP:**
+```
+mcp__codex__codex({
+  prompt: "<spec-executor instructions>\n\nTask: <task block>\n\nContext: <files>",
+  sandbox: "workspace-write"
+})
 ```
 
-Example payload:
-
-```json
-{
-  "prompt": "TASK: Implement user login form\nEXPECTED OUTCOME: Working form with validation\nCONTEXT: {contextPackage JSON here}\nCONSTRAINTS: Follow existing patterns\nMUST DO: Update Login.tsx\nMUST NOT DO: Modify unrelated files\nOUTPUT FORMAT: Summary + files modified + signal"
-}
+**Task sub-agent:**
+```
+Task({
+  subagent_type: "general-purpose",
+  model: "sonnet",
+  prompt: "<spec-executor instructions>\n\nTask: <task block>\n\nContext: <files>\n\nIMPORTANT: Output TASK_COMPLETE when done."
+})
 ```
 
 ### Step 3: Monitor
 
 ```markdown
-Task {id} delegated to Codex worker.
-Status: {pending|completed|failed}
+[<executor>] Task {id} delegated.
+Status: {pending|running|completed|failed}
 ```
 
 ### Step 4: Receive
 
 ```markdown
-Received result from Codex worker.
+Received result from worker.
 Signal: {TASK_COMPLETE|TASK_BLOCKED|NO_SIGNAL}
 Files modified: {count}
 ```
@@ -143,8 +167,9 @@ Files modified: {count}
 ### On TASK_COMPLETE
 
 1. Parse file modifications
-2. Hand off to codex-reviewer
-3. Wait for review decision
+2. Verify "Done when" criteria
+3. Update delegation log
+4. Proceed to next task
 
 ### On TASK_BLOCKED
 
@@ -168,6 +193,7 @@ When retrying:
   "previousAttempts": [
     {
       "attempt": 1,
+      "executor": "codex",
       "feedback": "Missing validation on email field",
       "issues": [
         "Email input lacks validation",
@@ -188,15 +214,14 @@ Bad feedback:
 - "Fix the validation"
 - "It doesn't work"
 
-## Token Efficiency
+## Delegation Logging
 
-Track token usage:
-```javascript
-state.usage.codex.totalTokens += result.tokensUsed;
-state.usage.codex.taskTokens[taskId] = result.tokensUsed;
-```
+Every worker dispatch is logged to `./specs/$spec/.ralph-delegation.json`. See `schemas/delegation.schema.json` for the full schema.
 
-Optimize by:
-- Reusing context across related tasks
-- Keeping prompts concise
-- Extracting only necessary file content
+Each worker entry tracks:
+- Worker ID, task ID, executor type
+- Start/complete timestamps, duration
+- Result signal, summary, files changed
+- Commit hash
+
+Aggregate stats are updated after each worker completes.
