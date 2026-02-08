@@ -3,7 +3,84 @@
     "allow": [
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(git rev-parse:*)",
+      "Bash(git log:*)",
+      "Bash(node --version:*)",
+      "Bash(curl:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\user\\Documents\\ConfidentialProject\\CEORalph\\.claude\\hooks\\hook.js\""
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\user\\Documents\\ConfidentialProject\\CEORalph\\.claude\\hooks\\hook.js\""
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\user\\Documents\\ConfidentialProject\\CEORalph\\.claude\\hooks\\hook.js\""
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\user\\Documents\\ConfidentialProject\\CEORalph\\.claude\\hooks\\hook.js\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\user\\Documents\\ConfidentialProject\\CEORalph\\.claude\\hooks\\hook.js\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\user\\Documents\\ConfidentialProject\\CEORalph\\.claude\\hooks\\hook.js\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\user\\Documents\\ConfidentialProject\\CEORalph\\.claude\\hooks\\hook.js\""
+          }
+        ]
+      }
     ]
   }
 }
